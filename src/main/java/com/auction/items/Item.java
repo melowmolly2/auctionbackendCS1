@@ -1,0 +1,32 @@
+package com.auction.items;
+
+import com.auction.users.User;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+@Entity
+@Table(name = "items")
+public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "item_id", nullable = false)
+    private Long itemId;
+
+    @ManyToOne // One seller many Item
+    @JoinColumn(name = "seller_username") //JoinColumn annotation creates a foreign key column
+    private User user;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    public Item(User user, String title) {
+        this.user = user;
+        this.title = title;
+    }
+}
