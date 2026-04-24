@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 import com.auction.items.Item;
 import com.auction.users.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,10 +25,12 @@ public class Bid {
     @Column
     private Long bidId;
 
+    @JsonIgnore
     @ManyToOne // Many bids, Item
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @JsonIgnore
     @OneToOne // One Bidder one Bid
     @JoinColumn(name = "bidder_username")
     private User user;
@@ -42,6 +45,9 @@ public class Bid {
     protected void addTime() {
         time = OffsetDateTime.now();
     }
+
+    public Bid() {
+    };
 
     public Bid(Item item, User bidder_username, Long bidAmount) {
         this.item = item;

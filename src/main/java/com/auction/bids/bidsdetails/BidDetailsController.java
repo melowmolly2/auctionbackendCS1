@@ -2,10 +2,10 @@ package com.auction.bids.bidsdetails;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.auction.bids.bidsdetails.dto.*;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
@@ -17,9 +17,8 @@ public class BidDetailsController {
         this.bidService = bidService;
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<BidPostResponse> makeBid(@Valid @RequestBody BidPostRequest request) {
-        System.err.println("Checked 1");
         BidPostResponse response = bidService.createBid(request);
         return ResponseEntity.ok().body(response);
     }

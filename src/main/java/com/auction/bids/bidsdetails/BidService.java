@@ -2,7 +2,8 @@ package com.auction.bids.bidsdetails;
 
 import org.springframework.stereotype.Service;
 
-import com.auction.bids.bidsdetails.dto.*;
+import com.auction.bids.bidsdetails.dto.BidPostRequest;
+import com.auction.bids.bidsdetails.dto.BidPostResponse;
 import com.auction.items.ItemRepository;
 import com.auction.users.UserRepository;
 
@@ -22,9 +23,19 @@ public class BidService {
 
     @Transactional
     public BidPostResponse createBid(BidPostRequest request) {
-        Bid bid = new Bid(itemRepository.getReferenceById(request.getItemId()),
-                userRepository.getReferenceById(request.getUsername()), request.getBidAmount());
-        bid = bidRepository.save(bid);
+        Bid bid;
+        if (bidRepository.existsByUserAndItem(userRepository.getReferenceById(request.username()),
+                itemRepository.getReferenceById(request.itemId()))) {
+            bid = bidRepository.findByUserAndItem(userRepository.getReferenceById(request.username()),
+                    itemRepository.getReferenceById(request.itemId()));
+            bid.setBidAmount(request.bidAmount());
+            bidRepository.save(bid);
+        } else {
+            bid = new Bid(itemRepository.getReferenceById(request.itemId()),
+                    userRepository.getReferenceById(request.username()), request.bidAmount());
+            bidRepository.save(bid);
+        }
+
         return new BidPostResponse(true, "Successfully created bid for an item", bid);
     }
 }

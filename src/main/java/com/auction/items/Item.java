@@ -1,7 +1,6 @@
 package com.auction.items;
 
 import com.auction.users.User;
-<<<<<<< HEAD
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,11 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-=======
-import jakarta.persistence.*;
->>>>>>> f835e063d32bcb0135d82b29445311113c0088c5
 
 @Entity
 @Table(name = "items")
