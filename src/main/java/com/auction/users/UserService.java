@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    private JwtUtil jwtUtil;
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;

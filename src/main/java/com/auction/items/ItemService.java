@@ -14,8 +14,8 @@ import java.util.List;
 
 @Service
 public class ItemService {
-    private ItemRepository itemRepository;
-    private UserRepository userRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     public ItemService(ItemRepository itemRepository, UserRepository userRepository) {
         this.itemRepository = itemRepository;
