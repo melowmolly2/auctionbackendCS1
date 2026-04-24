@@ -19,6 +19,7 @@ public class BidDetailsController {
 
     @PostMapping("/")
     public ResponseEntity<BidPostResponse> makeBid(@Valid @RequestBody BidPostRequest request) {
+        System.err.println("Checked 1");
         BidPostResponse response = bidService.createBid(request);
         return ResponseEntity.ok().body(response);
     }

@@ -1,6 +1,7 @@
 package com.auction.items;
 
 import com.auction.users.User;
+<<<<<<< HEAD
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+=======
+import jakarta.persistence.*;
+>>>>>>> f835e063d32bcb0135d82b29445311113c0088c5
 
 @Entity
 @Table(name = "items")
@@ -35,14 +39,6 @@ public class Item {
         this.title = title;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public Long getItemId() {
         return itemId;
     }
@@ -51,8 +47,16 @@ public class Item {
         return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }
