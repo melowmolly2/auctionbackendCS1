@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "com.auction.users") // Error handling safety net
+@RestControllerAdvice(basePackages = "com.auction.users")
 public class UserControllerAdvice {
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<BaseResponse> handleNoSellerException(ItemException exception) {
+    public ResponseEntity<BaseResponse> handleNoSellerException(UserException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.response);
     }
 }

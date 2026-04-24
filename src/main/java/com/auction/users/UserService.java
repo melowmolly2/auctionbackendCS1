@@ -1,6 +1,7 @@
 package com.auction.users;
 
 import com.auction.security.JwtUtil;
+import com.auction.users.exceptions.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,7 @@ public class UserService {
     public UserResponse userSignin(RegisterRequest request) {
         String hashedPassword = passwordEncoder.encode(request.password());
         if (userRepository.existsByUsername(request.username())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username has already been taken");
+            throw new UserException(false, "Username has already been taken");
         }
         User user = new User(request.username(), request.displayName(), hashedPassword, 0.0);
         user = userRepository.save(user);
@@ -36,13 +37,11 @@ public class UserService {
 
     @Transactional
     public AuthResponse userLogin(LoginRequest request) {
-        //throws a BadCredentialsException if wrong username or password
         User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+                .orElseThrow(() -> new UserException(false,"Invalid username or password"));
 
         if (!passwordEncoder.matches(request.password(), user.getHashedPassword())) {
-            throw new BadCredentialsException("Invalid username or password");
-
+            throw new UserException(false,"Invalid username or password");
         }
         //login successful
         return new AuthResponse(true, "Login successful", jwtUtil.generateToken(user.getUsername()));
