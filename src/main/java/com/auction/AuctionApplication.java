@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @RestController
 public class AuctionApplication {
-	//hello!!
 	public static void main(String[] args) {
 		System.out.println("Hello");
 		SpringApplication.run(AuctionApplication.class, args);
 	}
+	//welcome message
 	@GetMapping("/hello")
 	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
 		return String.format("Hello %s!", name);

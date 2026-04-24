@@ -2,6 +2,7 @@ package com.auction.users;
 
 import com.auction.security.JwtUtil;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,14 +36,15 @@ public class UserService {
 
     @Transactional
     public AuthResponse userLogin(LoginRequest request) {
+        //throws a BadCredentialsException if wrong username or password
         User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.password(), user.getHashedPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password");
+            throw new BadCredentialsException("Invalid username or password");
 
         }
-
+        //login successful
         return new AuthResponse(true, "Login successful", jwtUtil.generateToken(user.getUsername()));
     }
 }
