@@ -1,7 +1,6 @@
 package com.auction.users;
 
 import com.auction.common.BaseResponse;
-import com.auction.items.exceptions.ItemException;
 import com.auction.users.exceptions.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

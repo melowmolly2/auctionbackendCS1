@@ -1,12 +1,15 @@
 package com.auction.users;
 
-import org.springframework.web.bind.annotation.RestController;
-import com.auction.users.dto.*;
+import com.auction.users.dto.AuthResponse;
+import com.auction.users.dto.LoginRequest;
+import com.auction.users.dto.RegisterRequest;
+import com.auction.users.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
@@ -23,12 +26,12 @@ public class UserController {
         UserResponse serviceResponse = userService.userSignin(request);
         return ResponseEntity.ok(serviceResponse);
     }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse serviceResponse = userService.userLogin(request);
         return ResponseEntity.ok(serviceResponse);
     }
-
 
 
 }
