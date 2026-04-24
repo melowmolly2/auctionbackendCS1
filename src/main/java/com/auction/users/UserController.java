@@ -19,6 +19,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<UserResponse> signIn(@Valid @RequestBody RegisterRequest request) {
+        System.out.println("checking1");
         UserResponse serviceResponse = userService.userSignin(request);
         return ResponseEntity.ok(serviceResponse);
     }
