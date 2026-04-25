@@ -1,6 +1,7 @@
 package com.auction.items;
 
 import com.auction.users.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ public class Item {
     @Column(name = "item_id")
     private Long itemId;
 
+    @JsonIgnore
     @ManyToOne // One seller many Item
     @JoinColumn(name = "seller_username") // JoinColumn annotation creates a foreign key column
     private User user;
