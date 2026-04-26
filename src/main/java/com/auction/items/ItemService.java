@@ -5,8 +5,11 @@ import com.auction.items.dto.BaseItemResponse;
 import com.auction.items.dto.GetItemsResponse;
 import com.auction.items.dto.PublishItemRequest;
 import com.auction.items.exceptions.ItemException;
+import com.auction.itemstatus.ItemStatus;
+import com.auction.itemstatus.ItemStatusService;
 import com.auction.users.User;
-import com.auction.users.UserRepository;
+import com.auction.users.UserService;
+
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +18,27 @@ import java.util.List;
 @Service
 public class ItemService {
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ItemStatusService itemStatusService;
 
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemService(ItemRepository itemRepository, UserService userService,
+            ItemStatusService itemStatusService) {
         this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.itemStatusService = itemStatusService;
+
     }
 
     @Transactional
     public BaseItemResponse publishItem(PublishItemRequest request) {
-        User user = userRepository.findByUsername(request.sellerUsername())
-                .orElseThrow(() -> new ItemException(false, "There is no seller with that username."));
+        User user = userService.getUserReferenceByUsername(request.sellerUsername());
         Item item = itemRepository.save(new Item(user, request.title()));
+
+        // Create Item Status along with the item
+        itemStatusService.saveStatus(
+                new ItemStatus(item, 0.0, request.sellerUsername(), request.endTime(), request.startingPrice(),
+                        request.buyItNowPrice(), request.bitIncrement()));
+
         return new BaseItemResponse(true, "Created new item.", item);
     }
 
@@ -50,5 +62,11 @@ public class ItemService {
     public GetItemsResponse getItems() {
         List<Item> items = itemRepository.findAll();
         return new GetItemsResponse(true, "Successfully get all items", items);
+    }
+
+    @Transactional
+    public Item getItemReferenceByItemId(Long itemId) {
+        Item itemRef = itemRepository.getReferenceById(itemId);
+        return itemRef;
     }
 }

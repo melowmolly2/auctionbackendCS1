@@ -36,7 +36,7 @@ public class Bid {
     private User user;
 
     @Column(name = "bid_amount")
-    private Long bidAmount;
+    private Double bidAmount;
 
     @Column(name = "bid_time")
     private OffsetDateTime time;
@@ -49,7 +49,7 @@ public class Bid {
     public Bid() {
     };
 
-    public Bid(Item item, User bidder_username, Long bidAmount) {
+    public Bid(Item item, User bidder_username, Double bidAmount) {
         this.item = item;
         this.user = bidder_username;
         this.bidAmount = bidAmount;
@@ -79,11 +79,11 @@ public class Bid {
         this.user = user;
     }
 
-    public Long getBidAmount() {
+    public Double getBidAmount() {
         return bidAmount;
     }
 
-    public void setBidAmount(Long bidAmount) {
+    public void setBidAmount(Double bidAmount) {
         this.bidAmount = bidAmount;
     }
 

@@ -44,4 +44,10 @@ public class UserService {
 
         return new AuthResponse(true, "Login successful", jwtUtil.generateToken(user.getUsername()));
     }
+
+    @Transactional
+    public User getUserReferenceByUsername(String username) {
+        User userRef = userRepository.getReferenceById(username);
+        return userRef;
+    }
 }
