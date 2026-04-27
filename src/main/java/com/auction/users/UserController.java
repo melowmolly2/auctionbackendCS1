@@ -1,7 +1,13 @@
 package com.auction.users;
 
-import com.auction.users.dto.*;
+import com.auction.users.dto.AuthResponse;
+import com.auction.users.dto.LoginRequest;
+import com.auction.users.dto.RefreshTokenRequest;
+import com.auction.users.dto.RegisterRequest;
+import com.auction.users.dto.UserResponse;
 import jakarta.validation.Valid;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,12 +22,16 @@ import com.auction.bids.Bid;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.jointdata.BidAndItem;
 import com.auction.security.UserDetailsImpl;
+import com.auction.users.dto.AuthResponse;
+import com.auction.users.dto.BalanceResponse;
+import com.auction.users.dto.DepositRequest;
+import com.auction.users.dto.LoginRequest;
+import com.auction.users.dto.RegisterRequest;
+import com.auction.users.dto.UserResponse;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -55,11 +65,10 @@ public class UserController {
         AuthResponse serviceResponse = userService.refreshToken(request);
         return ResponseEntity.ok(serviceResponse);
     }
-
     // API Endpoints for user
     @PostMapping("/me/deposit")
     public ResponseEntity<BalanceResponse> deposit(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-                                                   @Valid @RequestBody DepositRequest request) {
+            @Valid @RequestBody DepositRequest request) {
         BalanceResponse response = userService.depositCredit(userDetailsImpl.getUsername(), request.getAmount());
         return ResponseEntity.ok().body(response);
     }
