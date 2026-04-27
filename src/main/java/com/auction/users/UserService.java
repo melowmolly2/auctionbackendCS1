@@ -13,6 +13,8 @@ import com.auction.bids.Bid;
 import com.auction.bids.BidRepository;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.jointdata.BidAndItem;
+import com.auction.bids.Bid;
+import com.auction.bids.BidRepository;
 import com.auction.security.JwtUtil;
 import com.auction.users.dto.AuthResponse;
 import com.auction.users.dto.BalanceResponse;
@@ -21,8 +23,9 @@ import com.auction.users.dto.RefreshTokenRequest;
 import com.auction.users.dto.RegisterRequest;
 import com.auction.users.dto.UserResponse;
 import com.auction.users.exceptions.UserException;
-
-import jakarta.transaction.Transactional;;;
+import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
