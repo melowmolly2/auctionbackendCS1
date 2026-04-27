@@ -1,4 +1,4 @@
-package com.auction.bids.bidsdetails;
+package com.auction.bids;
 
 import java.time.OffsetDateTime;
 
@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -31,7 +30,7 @@ public class Bid {
     private Item item;
 
     @JsonIgnore
-    @OneToOne // One Bidder one Bid
+    @ManyToOne // One Bidder many Bid
     @JoinColumn(name = "bidder_username")
     private User user;
 

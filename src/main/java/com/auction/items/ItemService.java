@@ -1,7 +1,18 @@
 package com.auction.items;
 
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.auction.common.BaseObjectResponse;
 import com.auction.common.BaseResponse;
 import com.auction.items.dto.BaseItemResponse;
+import com.auction.items.dto.GetItemPagesResponse;
 import com.auction.items.dto.GetItemsResponse;
 import com.auction.items.dto.PublishItemRequest;
 import com.auction.items.exceptions.ItemException;
@@ -11,9 +22,6 @@ import com.auction.users.User;
 import com.auction.users.UserService;
 
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ItemService {
@@ -42,6 +50,11 @@ public class ItemService {
         return new BaseItemResponse(true, "Created new item.", item);
     }
 
+    @Transactional
+    public boolean existByItemId(Long itemId) {
+        return itemRepository.existsById(itemId);
+    }
+
     // Consider if you want to do a Cascading Deletion here
     @Transactional
     public BaseResponse deleteItem(Long itemId) {
@@ -68,5 +81,19 @@ public class ItemService {
     public Item getItemReferenceByItemId(Long itemId) {
         Item itemRef = itemRepository.getReferenceById(itemId);
         return itemRef;
+    }
+
+    @Transactional
+    public GetItemPagesResponse getActiveItemsByPageTitle(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("title"));
+        Page<Item> pages = itemRepository.findActiveItemPages(Instant.now().toEpochMilli(), pageable);
+        return new GetItemPagesResponse(true, "successfully got pages", pages);
+    }
+
+    @Transactional
+    public BaseObjectResponse<Page<Item>> GetBidsOnItem(Long itemId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("bids.bid_amount"));
+        Page<Item> items = itemRepository.findBidsOnItem(pageable);
+        return new BaseObjectResponse<Page<Item>>(true, "Succesfully get all bids", items);
     }
 }

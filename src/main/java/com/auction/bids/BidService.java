@@ -1,9 +1,16 @@
-package com.auction.bids.bidsdetails;
+package com.auction.bids;
 
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.auction.bids.bidsdetails.dto.BidPostRequest;
-import com.auction.bids.bidsdetails.dto.BidPostResponse;
+import com.auction.bids.dto.BidPostRequest;
+import com.auction.bids.dto.BidPostResponse;
+import com.auction.bids.exceptions.BuyItNowException;
+import com.auction.common.BaseException;
+import com.auction.common.BaseResponse;
 import com.auction.items.Item;
 import com.auction.items.ItemService;
 import com.auction.itemstatus.ItemStatus;
@@ -35,6 +42,12 @@ public class BidService {
         Bid bid;
         Item itemRef = itemService.getItemReferenceByItemId(request.itemId());
         User userRef = userService.getUserReferenceByUsername(request.username());
+        ItemStatus itemStatus = itemStatusService.getItemStatus(request.itemId());
+
+        if (request.bidAmount() < itemStatus.getStartingPrice()) {
+            throw new BaseException(
+                    "Bid amount must be higher than " + Double.toString(itemStatus.getStartingPrice()));
+        }
 
         // if bid exist then get bid from DB and then edit bid and save it again to db
         if (bidRepository.existsByUserAndItem(userRef, itemRef)) {
@@ -45,7 +58,6 @@ public class BidService {
             bid = new Bid(itemRef, userRef, request.bidAmount());
             bidRepository.save(bid);
         }
-        ItemStatus itemStatus = itemStatusService.getItemStatus(request.itemId());
         // If user bid amount if higher than the current highest + increment, they would
         // be the highest bidder
         if (request.bidAmount() > itemStatus.getCurrentPrice() + itemStatus.getBidIncrement()) {
@@ -54,4 +66,30 @@ public class BidService {
         return new BidPostResponse(true, "Successfully created bid for an item", bid);
     }
 
+    @Transactional
+    public BaseResponse buyItemNow(Long itemId, String username) {
+        ItemStatus itemStatus = itemStatusService.getItemStatus(itemId);
+        User user = userService.getUserByUsername(username);
+        // Buy now if balance >= buyitnow, buyitnow > currentprice, buyitnow != 0
+        // (Seller does not set a buy now price)
+        if (user.getBalance() >= itemStatus.getBuyItNowPrice()
+                && itemStatus.getBuyItNowPrice() > itemStatus.getCurrentPrice() && itemStatus.getBuyItNowPrice() != 0) {
+            itemStatus.setHighestBidUser(username);
+            itemStatus.setCurrentPrice(itemStatus.getBuyItNowPrice());
+            itemStatus.setEndTime(Instant.now().toEpochMilli());
+            itemStatusService.saveStatus(itemStatus);
+        } else {
+
+            throw new BuyItNowException("You don't have enough money in your balance to buy the item");
+        }
+        return new BaseResponse(true, "Successfully bought item");
+    }
+
+    @Transactional
+    public Page<Bid> getBidsByUser(String username) {
+        User userRef = userService.getUserReferenceByUsername(username);
+        Page<Bid> bids = bidRepository.findAllByUser(userRef);
+        return bids;
+
+    }
 }

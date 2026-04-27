@@ -22,7 +22,7 @@ public class ItemStatusService {
 
     @Transactional
     public ItemStatus saveStatus(ItemStatus itemStatus) {
-        System.err.println("Status Created");
+        System.out.println("Status Created");
         itemStatusRepository.save(itemStatus);
         return itemStatus;
     }
@@ -50,4 +50,5 @@ public class ItemStatusService {
     public List<ItemStatus> getAllItemStatus() {
         return itemStatusRepository.findAll();
     }
+
 }

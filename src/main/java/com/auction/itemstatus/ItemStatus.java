@@ -1,6 +1,6 @@
 package com.auction.itemstatus;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import com.auction.items.Item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,7 +15,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
-@Table
+@Table(name = "item_statuses")
 public class ItemStatus {
     // Put this here so that Jpa does not smite me.
     @Id
@@ -33,19 +33,17 @@ public class ItemStatus {
     @Column(name = "username")
     private String highestBidUser;
 
+    // We store as Unix time so backend have less of a headache
     @Column(name = "start_time")
-    private OffsetDateTime startTime;
+    private Long startTime;
 
     @PrePersist
     void setStartTime() {
-        this.startTime = OffsetDateTime.now();
+        this.startTime = Instant.now().toEpochMilli();
     }
 
     @Column(name = "end_time")
-    private OffsetDateTime endTime;
-
-    @Column(name = "item_status")
-    private boolean itemStatus;
+    private Long endTime;
 
     @Column(name = "starting_price")
     private Double startingPrice;
@@ -59,7 +57,7 @@ public class ItemStatus {
     public ItemStatus() {
     };
 
-    public ItemStatus(Item item, Double currentPrice, String username, OffsetDateTime endTime, Double startingPrice,
+    public ItemStatus(Item item, Double currentPrice, String username, Long endTime, Double startingPrice,
             Double buyItNowPrice, Double bidIncrement) {
         this.item = item;
         this.currentPrice = currentPrice;
@@ -94,20 +92,12 @@ public class ItemStatus {
         this.highestBidUser = highestBidUser;
     }
 
-    public OffsetDateTime getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(OffsetDateTime endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
-    }
-
-    public boolean isItemStatus() {
-        return itemStatus;
-    }
-
-    public void setItemStatus(boolean itemStatus) {
-        this.itemStatus = itemStatus;
     }
 
     public Double getStartingPrice() {

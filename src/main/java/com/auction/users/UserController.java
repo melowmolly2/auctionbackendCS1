@@ -1,11 +1,20 @@
 package com.auction.users;
 
+import com.auction.bids.Bid;
+import com.auction.common.BaseObjectResponse;
+import com.auction.security.UserDetailsImpl;
 import com.auction.users.dto.AuthResponse;
+import com.auction.users.dto.BalanceResponse;
+import com.auction.users.dto.DepositRequest;
 import com.auction.users.dto.LoginRequest;
 import com.auction.users.dto.RegisterRequest;
 import com.auction.users.dto.UserResponse;
+
 import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +41,24 @@ public class UserController {
         return ResponseEntity.ok(serviceResponse);
     }
 
+    // API Endpoints for user
+    @PostMapping("/me/deposit")
+    public ResponseEntity<BalanceResponse> deposit(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @Valid @RequestBody DepositRequest request) {
+        BalanceResponse response = userService.depositCredit(userDetailsImpl.getUsername(), request.getAmount());
+        return ResponseEntity.ok().body(response);
+    }
 
+    @PostMapping("/me/balance")
+    public ResponseEntity<BalanceResponse> balance(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+        BalanceResponse response = userService.getBalance(userDetailsImpl.getUsername());
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/me/bids")
+    public ResponseEntity<BaseObjectResponse<Page<Bid>>> bids(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+        BaseObjectResponse<Page<Bid>> response = userService.getMyCurrentBids(userDetailsImpl.getUsername());
+        return ResponseEntity.ok().body(response);
+    }
 }

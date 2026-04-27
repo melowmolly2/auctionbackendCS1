@@ -1,6 +1,6 @@
-package com.auction.bids.bidsdetails.dto;
+package com.auction.bids.dto;
 
-import com.auction.bids.bidsdetails.Bid;
+import com.auction.bids.Bid;
 import com.auction.common.BaseResponse;
 
 public class BidPostResponse extends BaseResponse {

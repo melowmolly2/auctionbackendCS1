@@ -1,5 +1,6 @@
-package com.auction.bids.bidsdetails;
+package com.auction.bids;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,8 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     // Property Expression: Must be a variable name in your class (the class here is
     // Bid)
     Bid findByUserAndItem(User user, Item item);
+
+    Page<Bid> findAllByUser(User user);
 
     boolean existsByUserAndItem(User user, Item item);
 }
