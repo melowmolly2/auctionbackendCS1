@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.auction.bids.Bid;
+import com.auction.bids.BidRepository;
 import com.auction.common.BaseException;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.BaseResponse;
@@ -29,12 +31,14 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final ItemStatusService itemStatusService;
+    private final BidRepository bidRepository;
 
     public ItemService(ItemRepository itemRepository, UserService userService,
-            ItemStatusService itemStatusService) {
+            ItemStatusService itemStatusService, BidRepository bidRepository) {
         this.itemRepository = itemRepository;
         this.userService = userService;
         this.itemStatusService = itemStatusService;
+        this.bidRepository = bidRepository;
 
     }
 
@@ -91,23 +95,22 @@ public class ItemService {
 
     @Transactional
     public GetItemPagesResponse getActiveItemsByPageTitle(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("title"));
-        Page<Item> pages = itemRepository.findActiveItemPages(Instant.now().toEpochMilli(), pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("item.title"));
+        Page<Item> pages = itemRepository.findActiveItemPage(pageable, Instant.now().toEpochMilli());
         return new GetItemPagesResponse(true, "successfully got pages", pages);
     }
 
     @Transactional
-    public BaseObjectResponse<Page<Item>> getBidsOnItem(Long itemId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("bids.bid_amount"));
-        Page<Item> items = itemRepository.findBidsOnItem(pageable);
-        return new BaseObjectResponse<Page<Item>>(true, "Succesfully get all bids", items);
+    public BaseObjectResponse<Page<Bid>> getBidsOnItem(Long itemId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("bidAmount"));
+        Page<Bid> items = bidRepository.findItemBidHistory(pageable, itemId);
+        return new BaseObjectResponse<Page<Bid>>(true, "Succesfully get all bids", items);
     }
 
     @Transactional
     public BaseObjectResponse<Page<Item>> getListingByUser(int page, int size, String username) {
-        User userRef = userService.getUserReferenceByUsername(username);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Item> items = itemRepository.findByUser(pageable, userRef);
+        Page<Item> items = itemRepository.findItemListing(pageable, username);
         return new BaseObjectResponse<Page<Item>>(true, "succesfully got listing", items);
     }
 }

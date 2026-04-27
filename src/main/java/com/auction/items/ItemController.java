@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auction.bids.Bid;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.BaseResponse;
 import com.auction.items.dto.BaseItemResponse;
@@ -38,9 +39,11 @@ public class ItemController {
 
     @PostMapping("")
     public ResponseEntity<BaseItemResponse> postItem(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+
             @Valid @RequestBody PublishItemRequest request) {
 
-        BaseItemResponse response = itemService.publishItem(request, userDetailsImpl.getUsername());
+        BaseItemResponse response = itemService.publishItem(request,
+                userDetailsImpl.getUsername());
 
         return ResponseEntity.ok().body(response);
     }
@@ -75,11 +78,11 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}/bids")
-    public ResponseEntity<BaseObjectResponse<Page<Item>>> getBids(
+    public ResponseEntity<BaseObjectResponse<Page<Bid>>> getBids(
             @PathVariable Long itemId,
             @Min(0) @RequestParam(defaultValue = "0") int page,
             @Min(1) @Max(20) @RequestParam(defaultValue = "20") int size) {
-        BaseObjectResponse<Page<Item>> response = itemService.getBidsOnItem(itemId, page, size);
+        BaseObjectResponse<Page<Bid>> response = itemService.getBidsOnItem(itemId, page, size);
         return ResponseEntity.ok().body(response);
     }
 
