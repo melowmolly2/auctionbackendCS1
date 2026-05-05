@@ -1,4 +1,4 @@
-package com.auction.security;
+package com.auction.auth.jwtools;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.auction.security.CustomUserDetailsService;
 
 import java.io.IOException;
 
@@ -25,13 +27,15 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Filters incoming requests to validate the JWT token and set the authentication context.
+     * Filters incoming requests to validate the JWT token and set the
+     * authentication context.
      */
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String encodedToken = parseJwt(request);
-        // allow unauthenticated requests to proceed, let controller-level security handle authorization
+        // allow unauthenticated requests to proceed, let controller-level security
+        // handle authorization
         if (encodedToken != null && jwtUtil.validateJwtToken(encodedToken)) {
             String username = jwtUtil.getUserFromToken(encodedToken);
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(username);
@@ -44,12 +48,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * Parses the JWT token from the Authorization header.
-     *
-     * @param request The HTTP request.
-     * @return The JWT token string, or null if not found.
-     */
     public String parseJwt(HttpServletRequest request) {
         String authenticationHeader = request.getHeader("Authorization");
 
@@ -60,16 +58,10 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     }
 
-    /**
-     * Specifies which paths should not be filtered by this filter.
-     *
-     * @param request The HTTP request.
-     * @return True if the path should not be filtered, false otherwise.
-     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
 
-        return path.equals("/users/login") || path.equals("/users/register") || path.equals("/users/refresh");
+        return path.equals("/users/login") || path.equals("/users/register") || path.equals("/refresh");
     }
 }

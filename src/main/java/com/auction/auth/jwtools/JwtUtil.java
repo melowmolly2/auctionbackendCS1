@@ -1,4 +1,4 @@
-package com.auction.security;
+package com.auction.auth.jwtools;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -29,7 +29,8 @@ public class JwtUtil {
     /**
      * Generates an access token for the given username.
      *
-     * @param username The username to generate the token for.
+     * @param username
+     *                     The username to generate the token for.
      * @return The generated access token.
      */
     public String generateToken(String username) {
@@ -40,7 +41,8 @@ public class JwtUtil {
     /**
      * Generates a refresh token for the given username.
      *
-     * @param username The username to generate the token for.
+     * @param username
+     *                     The username to generate the token for.
      * @return The generated refresh token.
      */
     public String generateRefreshToken(String username) {

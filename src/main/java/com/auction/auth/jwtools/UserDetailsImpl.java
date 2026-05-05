@@ -1,4 +1,4 @@
-package com.auction.security;
+package com.auction.auth.jwtools;
 
 import com.auction.users.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +14,7 @@ public class UserDetailsImpl implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(String username, String displayName, Double balance,
-                           Collection<? extends GrantedAuthority> authorities) {
+            Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.displayName = displayName;
         this.balance = balance;

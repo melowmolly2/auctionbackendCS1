@@ -9,20 +9,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.auction.auth.RefreshToken;
+import com.auction.auth.RefreshTokenRepository;
+import com.auction.auth.jwtools.JwtUtil;
 import com.auction.bids.Bid;
 import com.auction.bids.BidRepository;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.jointdata.BidAndItem;
-import com.auction.security.JwtUtil;
 import com.auction.users.dto.AuthResponse;
 import com.auction.users.dto.BalanceResponse;
 import com.auction.users.dto.LoginRequest;
-import com.auction.users.dto.RefreshTokenRequest;
 import com.auction.users.dto.RegisterRequest;
 import com.auction.users.dto.UserResponse;
 import com.auction.users.exceptions.UserException;
 
-import jakarta.transaction.Transactional;;;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -42,10 +43,11 @@ public class UserService {
     }
 
     public UserResponse userRegister(RegisterRequest request) {
-        String hashedPassword = passwordEncoder.encode(request.password());
         if (userRepository.existsByUsername(request.username())) {
             throw new UserException(false, "Username has already been taken");
         }
+        String hashedPassword = passwordEncoder.encode(request.password());
+
         User user = new User(request.username(), request.displayName(), hashedPassword, 0.0);
         user = userRepository.save(user);
         return user.toResponse();
@@ -67,17 +69,6 @@ public class UserService {
         refreshTokenRepository.save(new RefreshToken(user.getUsername(), refreshToken));
 
         return new AuthResponse(true, "Login successful", token, refreshToken);
-    }
-
-    public AuthResponse refreshToken(RefreshTokenRequest request) {
-        String refreshToken = request.refreshToken();
-        return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .map(token -> {
-                    String username = token.getUsername();
-                    String newAccessToken = jwtUtil.generateToken(username);
-                    return new AuthResponse(true, "New access token generated", newAccessToken, refreshToken);
-                })
-                .orElseThrow(() -> new UserException(false, "Invalid refresh token"));
     }
 
     @Transactional

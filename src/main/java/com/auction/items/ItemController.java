@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auction.auth.jwtools.UserDetailsImpl;
 import com.auction.bids.Bid;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.BaseResponse;
@@ -19,7 +20,6 @@ import com.auction.items.dto.BaseItemResponse;
 import com.auction.items.dto.GetItemPagesResponse;
 import com.auction.items.dto.GetItemsResponse;
 import com.auction.items.dto.PublishItemRequest;
-import com.auction.security.UserDetailsImpl;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;

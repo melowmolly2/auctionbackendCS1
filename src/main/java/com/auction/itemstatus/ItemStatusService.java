@@ -29,7 +29,7 @@ public class ItemStatusService {
 
     @Transactional
     public ItemStatus updateStatus(Item item, Double currentPrice, String username) {
-        ItemStatus itemStatus = itemStatusRepository.findByItem(item);
+        ItemStatus itemStatus = itemStatusRepository.findByItemWithLock(item);
         itemStatus.setCurrentPrice(currentPrice);
         itemStatus.setHighestBidUser(username);
         itemStatusRepository.save(itemStatus);
@@ -38,12 +38,12 @@ public class ItemStatusService {
 
     @Transactional
     public ItemStatusGetResponse getStatusResponse(Long itemId) {
-        ItemStatus itemStatus = itemStatusRepository.findByItem(itemRepository.getReferenceById(itemId));
+        ItemStatus itemStatus = itemStatusRepository.findByItemWithLock(itemRepository.getReferenceById(itemId));
         return new ItemStatusGetResponse(true, "Succesfully get item status", itemStatus);
     }
 
     public ItemStatus getItemStatus(Long itemId) {
-        return itemStatusRepository.findByItem(itemRepository.getReferenceById(itemId));
+        return itemStatusRepository.findByItemWithLock(itemRepository.getReferenceById(itemId));
     }
 
     @Transactional

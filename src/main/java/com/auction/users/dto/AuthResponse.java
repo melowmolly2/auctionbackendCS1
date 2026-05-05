@@ -1,16 +1,32 @@
 package com.auction.users.dto;
 
-/**
- * Represents the response for authentication requests.
- *
- * @param success       Indicates whether the authentication was successful.
- * @param message       A message providing details about the authentication result.
- * @param token         The access token.
- * @param refreshToken  The refresh token.
- */
-public record AuthResponse(
-        boolean success,
-        String message,
-        String token,
-        String refreshToken) {
+import com.auction.common.BaseResponse;
+
+public class AuthResponse extends BaseResponse {
+    private String accessToken;
+    private String refreshToken;
+
+    public AuthResponse(boolean status, String message, String accessToken, String refreshToken) {
+
+        super(status, message);
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 }

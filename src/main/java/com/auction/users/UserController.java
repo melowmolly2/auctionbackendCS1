@@ -2,7 +2,6 @@ package com.auction.users;
 
 import com.auction.users.dto.AuthResponse;
 import com.auction.users.dto.LoginRequest;
-import com.auction.users.dto.RefreshTokenRequest;
 import com.auction.users.dto.RegisterRequest;
 import com.auction.users.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auction.auth.jwtools.UserDetailsImpl;
 import com.auction.bids.Bid;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.jointdata.BidAndItem;
-import com.auction.security.UserDetailsImpl;
 import com.auction.users.dto.BalanceResponse;
 import com.auction.users.dto.DepositRequest;
 
@@ -46,12 +45,6 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse serviceResponse = userService.userLogin(request);
-        return ResponseEntity.ok(serviceResponse);
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
-        AuthResponse serviceResponse = userService.refreshToken(request);
         return ResponseEntity.ok(serviceResponse);
     }
 

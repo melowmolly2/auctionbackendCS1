@@ -2,7 +2,6 @@ package com.auction.bids;
 
 import java.time.Instant;
 
-import org.springframework.messaging.simp.user.UserRegistryMessageHandler;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +12,10 @@ import com.auction.common.BaseException;
 import com.auction.common.BaseResponse;
 import com.auction.items.Item;
 import com.auction.items.ItemRepository;
-import com.auction.items.ItemService;
 import com.auction.itemstatus.ItemStatus;
 import com.auction.itemstatus.ItemStatusService;
 import com.auction.users.User;
 import com.auction.users.UserRepository;
-import com.auction.users.UserService;
 
 import jakarta.transaction.Transactional;
 
@@ -44,12 +41,13 @@ public class BidService {
         Bid bid;
         Item itemRef = itemRepository.getReferenceById(request.itemId());
         User user = userRepository.getReferenceById(username);
+
         ItemStatus itemStatus = itemStatusService.getItemStatus(request.itemId());
 
         // big amount must be higher than starting price and bid time must be lower than
         // endtime and bid amount must be higher than current balance
         if (request.bidAmount() < itemStatus.getStartingPrice()
-                || Instant.now().toEpochMilli() < itemStatus.getEndTime() || request.bidAmount() > user.getBalance()) {
+                || Instant.now().toEpochMilli() > itemStatus.getEndTime() || request.bidAmount() > user.getBalance()) {
             throw new BaseException(
                     "Failed to bid");
         }

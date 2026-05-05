@@ -41,7 +41,7 @@ public class Bid {
     private Long time;
 
     @PrePersist
-    protected void addTime() {
+    void addTime() {
         time = Instant.now().toEpochMilli();
     }
 
