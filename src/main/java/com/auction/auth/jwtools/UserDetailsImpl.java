@@ -31,7 +31,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public String getPassword() {
-        return "";
+        throw new UnsupportedOperationException();
     }
 
     public String getDisplayName() {

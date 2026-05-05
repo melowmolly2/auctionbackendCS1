@@ -9,7 +9,7 @@ import com.auction.items.Item;
 
 import jakarta.persistence.LockModeType;
 
-public interface ItemStatusRepository extends JpaRepository<ItemStatus, Item> {
+public interface ItemStatusRepository extends JpaRepository<ItemStatus, Long> {
 
     // Must use Pessimistic Write or else a race condition will happen (a service
     // will call find Item and another will update while reading it, causing the one

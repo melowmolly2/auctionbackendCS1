@@ -48,13 +48,17 @@ public class ItemController {
         return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping("/{itemId}")
-    public ResponseEntity<BaseResponse> deleteItem(@PathVariable Long itemId,
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-
-        BaseResponse response = itemService.deleteItem(itemId, userDetailsImpl.getUsername());
-        return ResponseEntity.ok().body(response);
-    }
+    /*
+     * @DeleteMapping("/{itemId}")
+     * public ResponseEntity<BaseResponse> deleteItem(@PathVariable Long itemId,
+     * 
+     * @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+     * 
+     * BaseResponse response = itemService.deleteItem(itemId,
+     * userDetailsImpl.getUsername());
+     * return ResponseEntity.ok().body(response);
+     * }
+     */
 
     @GetMapping("/{itemId}")
     public ResponseEntity<BaseItemResponse> getItem(@PathVariable Long itemId) {
@@ -81,7 +85,7 @@ public class ItemController {
     public ResponseEntity<BaseObjectResponse<Page<Bid>>> getBids(
             @PathVariable Long itemId,
             @Min(0) @RequestParam(defaultValue = "0") int page,
-            @Min(1) @Max(20) @RequestParam(defaultValue = "20") int size) {
+            @Min(1) @Max(20) @RequestParam(defaultValue = "10") int size) {
         BaseObjectResponse<Page<Bid>> response = itemService.getBidsOnItem(itemId, page, size);
         return ResponseEntity.ok().body(response);
     }

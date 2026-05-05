@@ -1,6 +1,7 @@
 package com.auction.bids;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     // By: query conditions begin here
     // Property Expression: Must be a variable name in your class (the class here is
     // Bid)
-    Bid findByUserAndItem(User user, Item item);
+    Optional<Bid> findByUserAndItem(User user, Item item);
 
     Page<Bid> findAllByUser(User user, Pageable pageable);
 

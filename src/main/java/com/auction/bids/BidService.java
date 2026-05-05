@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.auction.bids.dto.BidPostRequest;
 import com.auction.bids.dto.BidPostResponse;
@@ -16,8 +17,6 @@ import com.auction.itemstatus.ItemStatus;
 import com.auction.itemstatus.ItemStatusService;
 import com.auction.users.User;
 import com.auction.users.UserRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class BidService {
@@ -54,7 +53,8 @@ public class BidService {
 
         // if bid exist then get bid from DB and then edit bid and save it again to db
         if (bidRepository.existsByUserAndItem(user, itemRef)) {
-            bid = bidRepository.findByUserAndItem(user, itemRef);
+            bid = bidRepository.findByUserAndItem(user, itemRef)
+                    .orElseThrow(() -> new BaseException("No user or item"));
             bid.setBidAmount(request.bidAmount());
             bidRepository.save(bid);
         } else { // Else make new bid
@@ -81,6 +81,8 @@ public class BidService {
             itemStatus.setCurrentPrice(itemStatus.getBuyItNowPrice());
             itemStatus.setEndTime(Instant.now().toEpochMilli());
             itemStatusService.saveStatus(itemStatus);
+            user.setBalance(user.getBalance() - itemStatus.getBuyItNowPrice());
+            userRepository.save(user);
         } else {
 
             throw new BuyItNowException("You don't have enough money in your balance to buy the item");

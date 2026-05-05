@@ -51,7 +51,7 @@ public class UserController {
     @PostMapping("/me/deposit")
     public ResponseEntity<BalanceResponse> deposit(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @Valid @RequestBody DepositRequest request) {
-        BalanceResponse response = userService.depositCredit(userDetailsImpl.getUsername(), request.getAmount());
+        BalanceResponse response = userService.depositCredit(userDetailsImpl.getUsername(), request.amount());
         return ResponseEntity.ok().body(response);
     }
 
@@ -64,8 +64,8 @@ public class UserController {
     @GetMapping("/me/bids")
     public ResponseEntity<BaseObjectResponse<Page<Bid>>> bids(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-            @Min(0) @RequestParam(value = "0") int page,
-            @Min(1) @Max(20) @RequestParam(value = "10") int size) {
+            @Min(0) @RequestParam(defaultValue = "0") int page,
+            @Min(1) @Max(20) @RequestParam(defaultValue = "10") int size) {
         BaseObjectResponse<Page<Bid>> response = userService.getMyCurrentBids(userDetailsImpl.getUsername(), page,
                 size);
         return ResponseEntity.ok().body(response);

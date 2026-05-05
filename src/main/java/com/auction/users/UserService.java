@@ -8,12 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.auction.auth.RefreshToken;
 import com.auction.auth.RefreshTokenRepository;
 import com.auction.auth.jwtools.JwtUtil;
 import com.auction.bids.Bid;
 import com.auction.bids.BidRepository;
+import com.auction.common.BaseException;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.jointdata.BidAndItem;
 import com.auction.users.dto.AuthResponse;
@@ -21,9 +23,6 @@ import com.auction.users.dto.BalanceResponse;
 import com.auction.users.dto.LoginRequest;
 import com.auction.users.dto.RegisterRequest;
 import com.auction.users.dto.UserResponse;
-import com.auction.users.exceptions.UserException;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -44,7 +43,7 @@ public class UserService {
 
     public UserResponse userRegister(RegisterRequest request) {
         if (userRepository.existsByUsername(request.username())) {
-            throw new UserException(false, "Username has already been taken");
+            throw new BaseException("Username has already been taken");
         }
         String hashedPassword = passwordEncoder.encode(request.password());
 
@@ -56,10 +55,10 @@ public class UserService {
     @Transactional
     public AuthResponse userLogin(LoginRequest request) {
         User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new UserException(false, "Invalid username or password"));
+                .orElseThrow(() -> new BaseException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.password(), user.getHashedPassword())) {
-            throw new UserException(false, "Invalid username or password");
+            throw new BaseException("Invalid username or password");
         }
 
         String token = jwtUtil.generateToken(user.getUsername());
@@ -77,17 +76,17 @@ public class UserService {
         return userRef;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public User getUserByUsername(String username) {
         User request = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserException(false, "Invalid username"));
+                .orElseThrow(() -> new BaseException("Invalid username"));
         return request;
     }
 
     @Transactional
     public BalanceResponse depositCredit(String username, Double creditAmount) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserException(false, "Invalid username"));
+                .orElseThrow(() -> new BaseException("Invalid username"));
         user.setBalance(user.getBalance() + creditAmount);
         user = userRepository.save(user);
         return new BalanceResponse(true,
@@ -96,14 +95,14 @@ public class UserService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public BalanceResponse getBalance(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserException(false, "Invalid username"));
+                .orElseThrow(() -> new BaseException("Invalid username"));
         return new BalanceResponse(true, "Get balance successful", user.getBalance());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public BaseObjectResponse<Page<Bid>> getMyCurrentBids(String username, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         User userRef = userRepository.getReferenceById(username);
@@ -113,7 +112,7 @@ public class UserService {
         return new BaseObjectResponse<Page<Bid>>(true, "succesfully got my bids", bids);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public BaseObjectResponse<List<BidAndItem>> getMyWinnings(String username) {
 
         List<Bid> bids = bidRepository.getWinsByUser(username, Instant.now().getEpochSecond());
