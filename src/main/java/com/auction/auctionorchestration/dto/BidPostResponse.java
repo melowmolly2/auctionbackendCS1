@@ -1,4 +1,4 @@
-package com.auction.bids.dto;
+package com.auction.auctionorchestration.dto;
 
 import com.auction.bids.Bid;
 import com.auction.common.BaseResponse;

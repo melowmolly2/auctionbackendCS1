@@ -37,11 +37,6 @@ public class ItemStatus {
     @Column(name = "start_time")
     private Long startTime;
 
-    @PrePersist
-    void setStartTime() {
-        this.startTime = Instant.now().toEpochMilli();
-    }
-
     @Column(name = "end_time")
     private Long endTime;
 
@@ -53,6 +48,16 @@ public class ItemStatus {
 
     @Column(name = "bid_increment")
     private Double bidIncrement;
+
+    @Column(name = "item_status")
+    private String itemStatus;
+
+    @PrePersist
+    void makeItemActive() {
+        this.startTime = Instant.now().toEpochMilli();
+
+        this.itemStatus = "ACTIVE";
+    }
 
     public ItemStatus() {
     };
@@ -122,6 +127,22 @@ public class ItemStatus {
 
     public void setBidIncrement(Double bidIncrement) {
         this.bidIncrement = bidIncrement;
+    }
+
+    public String getItemStatus() {
+        return itemStatus;
+    }
+
+    public void setItemStatus(String itemStatus) {
+        this.itemStatus = itemStatus;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getStartTime() {
+        return startTime;
     }
 
 }

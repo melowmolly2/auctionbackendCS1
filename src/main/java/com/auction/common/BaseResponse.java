@@ -1,9 +1,6 @@
 package com.auction.common;
 
-import jakarta.validation.constraints.NotBlank;
-
 public class BaseResponse {
-    @NotBlank
     private boolean status;
 
     private String message;
