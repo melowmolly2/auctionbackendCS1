@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.auction.items.Item;
 import com.auction.users.User;
@@ -36,4 +37,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
     @NativeQuery(value = "SELECT bids.* FROM bids INNER JOIN items ON bids.item_id = items.item_id INNER JOIN item_statuses ON items.item_id = item_statuses.item_id WHERE :username = bids.bidder_username AND item_statuses.end_time < :now")
     public List<Bid> getWinsByUser(@Param("username") String username, @Param("now") Long now);
+
+    @Transactional
+    Long deleteByItemAndUser(Item item, User user);
 }

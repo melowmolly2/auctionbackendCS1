@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auction.auth.jwtools.UserDetailsImpl;
-import com.auction.bids.Bid;
 import com.auction.common.BaseObjectResponse;
 import com.auction.items.dto.BaseItemResponse;
 import com.auction.items.dto.GetItemPagesResponse;
@@ -77,15 +76,6 @@ public class ItemController {
             @Min(1) @Max(20) @RequestParam(defaultValue = "10") int size) {
         GetItemPagesResponse request = itemService.getActiveItemsByPageTitle(page, size);
         return ResponseEntity.ok().body(request);
-    }
-
-    @GetMapping("/{itemId}/bids")
-    public ResponseEntity<BaseObjectResponse<Page<Bid>>> getBids(
-            @PathVariable Long itemId,
-            @Min(0) @RequestParam(defaultValue = "0") int page,
-            @Min(1) @Max(20) @RequestParam(defaultValue = "10") int size) {
-        BaseObjectResponse<Page<Bid>> response = itemService.getBidsOnItem(itemId, page, size);
-        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/listings/{username}")

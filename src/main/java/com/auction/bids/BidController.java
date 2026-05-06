@@ -6,18 +6,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auction.auth.jwtools.UserDetailsImpl;
-import com.auction.bids.dto.BidPostRequest;
-import com.auction.bids.dto.BidPostResponse;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.BaseResponse;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
@@ -28,14 +24,6 @@ public class BidController {
 
     public BidController(BidService bidService) {
         this.bidService = bidService;
-    }
-
-    @PostMapping("")
-    public ResponseEntity<BidPostResponse> makeBid(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-            @Valid @RequestBody BidPostRequest request) {
-
-        BidPostResponse response = bidService.createBid(request, userDetailsImpl.getUsername());
-        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/buy-now/{itemId}")

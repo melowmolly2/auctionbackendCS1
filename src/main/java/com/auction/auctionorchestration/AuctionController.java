@@ -1,16 +1,26 @@
 package com.auction.auctionorchestration;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.auction.auctionorchestration.dto.BidPostRequest;
+import com.auction.auctionorchestration.dto.BidPostResponse;
 import com.auction.auth.jwtools.UserDetailsImpl;
-import com.auction.bids.dto.BidPostRequest;
-import com.auction.bids.dto.BidPostResponse;
+import com.auction.bids.Bid;
+import com.auction.common.BaseObjectResponse;
+import com.auction.common.jointdata.BidAndItem;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 @RequestMapping
 public class AuctionController {
@@ -27,4 +37,22 @@ public class AuctionController {
         BidPostResponse response = auctionService.createBid(request, userDetailsImpl.getUsername());
         return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping("/me/bids")
+    public ResponseEntity<BaseObjectResponse<Page<Bid>>> bids(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @Min(0) @RequestParam(defaultValue = "0") int page,
+            @Min(1) @Max(20) @RequestParam(defaultValue = "10") int size) {
+        BaseObjectResponse<Page<Bid>> response = auctionService.getMyCurrentBids(userDetailsImpl.getUsername(), page,
+                size);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/me/wins")
+    public ResponseEntity<BaseObjectResponse<List<BidAndItem>>> getWins(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+        BaseObjectResponse<List<BidAndItem>> response = auctionService.getMyWinnings(userDetailsImpl.getUsername());
+        return ResponseEntity.ok().body(response);
+    }
+
 }

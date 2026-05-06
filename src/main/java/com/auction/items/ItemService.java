@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.auction.bids.Bid;
 import com.auction.bids.BidRepository;
 import com.auction.common.BaseException;
 import com.auction.common.BaseObjectResponse;
@@ -29,14 +28,12 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final ItemStatusService itemStatusService;
-    private final BidRepository bidRepository;
 
     public ItemService(ItemRepository itemRepository, UserService userService,
             ItemStatusService itemStatusService, BidRepository bidRepository) {
         this.itemRepository = itemRepository;
         this.userService = userService;
         this.itemStatusService = itemStatusService;
-        this.bidRepository = bidRepository;
 
     }
 
@@ -81,23 +78,10 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public Item getItemReferenceByItemId(Long itemId) {
-        Item itemRef = itemRepository.getReferenceById(itemId);
-        return itemRef;
-    }
-
-    @Transactional(readOnly = true)
     public GetItemPagesResponse getActiveItemsByPageTitle(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("item.title"));
         Page<Item> pages = itemRepository.findActiveItemPage(pageable, Instant.now().toEpochMilli());
         return new GetItemPagesResponse(true, "successfully got pages", pages);
-    }
-
-    @Transactional(readOnly = true)
-    public BaseObjectResponse<Page<Bid>> getBidsOnItem(Long itemId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("bidAmount"));
-        Page<Bid> items = bidRepository.findItemBidHistory(pageable, itemId);
-        return new BaseObjectResponse<Page<Bid>>(true, "Succesfully get all bids", items);
     }
 
     @Transactional(readOnly = true)
@@ -110,5 +94,11 @@ public class ItemService {
     @Transactional
     public boolean existByItemId(Long itemId) {
         return itemRepository.existsById(itemId);
+    }
+
+    // getItemRef is used for internal
+    @Transactional
+    public Item getItemRef(Long itemId) {
+        return itemRepository.getReferenceById(itemId);
     }
 }

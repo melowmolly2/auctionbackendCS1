@@ -1,20 +1,10 @@
 package com.auction.users;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.auction.bids.Bid;
-import com.auction.bids.BidRepository;
 import com.auction.common.BaseException;
-import com.auction.common.BaseObjectResponse;
-import com.auction.common.jointdata.BidAndItem;
 import com.auction.users.dto.BalanceResponse;
 
 @Service
@@ -66,4 +56,11 @@ public class UserService {
         user = userRepository.save(user);
         return user;
     }
+
+    @Transactional
+    public User getUserRef(String username) {
+        User userRef = userRepository.getReferenceById(username);
+        return userRef;
+    }
+
 }
