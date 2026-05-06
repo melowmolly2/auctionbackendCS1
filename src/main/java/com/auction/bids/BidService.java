@@ -2,16 +2,17 @@ package com.auction.bids;
 
 import java.time.Instant;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.auction.bids.dto.BidPostRequest;
-import com.auction.bids.dto.BidPostResponse;
 import com.auction.bids.exceptions.BuyItNowException;
-import com.auction.common.BaseException;
+import com.auction.common.BaseObjectResponse;
 import com.auction.common.BaseResponse;
-import com.auction.items.Item;
 import com.auction.items.ItemRepository;
 import com.auction.itemstatus.ItemStatus;
 import com.auction.itemstatus.ItemStatusService;
@@ -24,49 +25,13 @@ public class BidService {
 
     private final BidRepository bidRepository;
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
     private final ItemStatusService itemStatusService;
 
-    public BidService(BidRepository bidRepository, UserRepository userRepository, ItemRepository itemRepository,
+    public BidService(BidRepository bidRepository, UserRepository userRepository,
             ItemStatusService itemStatusService) {
         this.bidRepository = bidRepository;
         this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
         this.itemStatusService = itemStatusService;
-    }
-
-    @Transactional
-    public BidPostResponse createBid(BidPostRequest request, String username) {
-        Bid bid;
-        Item itemRef = itemRepository.getReferenceById(request.itemId());
-        User user = userRepository.getReferenceById(username);
-
-        ItemStatus itemStatus = itemStatusService.getItemStatus(request.itemId());
-
-        // big amount must be higher than starting price and bid time must be lower than
-        // endtime and bid amount must be higher than current balance
-        if (request.bidAmount() < itemStatus.getStartingPrice()
-                || Instant.now().toEpochMilli() > itemStatus.getEndTime() || request.bidAmount() > user.getBalance()) {
-            throw new BaseException(
-                    "Failed to bid");
-        }
-
-        // if bid exist then get bid from DB and then edit bid and save it again to db
-        if (bidRepository.existsByUserAndItem(user, itemRef)) {
-            bid = bidRepository.findByUserAndItem(user, itemRef)
-                    .orElseThrow(() -> new BaseException("No user or item"));
-            bid.setBidAmount(request.bidAmount());
-            bidRepository.save(bid);
-        } else { // Else make new bid
-            bid = new Bid(itemRef, user, request.bidAmount());
-            bidRepository.save(bid);
-        }
-        // If user bid amount if higher than the current highest + increment, they would
-        // be the highest bidder
-        if (request.bidAmount() > itemStatus.getCurrentPrice() + itemStatus.getBidIncrement()) {
-            itemStatusService.updateStatus(itemRef, request.bidAmount(), username);
-        }
-        return new BidPostResponse(true, "Successfully created bid for an item", bid);
     }
 
     @Transactional
@@ -90,4 +55,10 @@ public class BidService {
         return new BaseResponse(true, "Successfully bought item");
     }
 
+    @Transactional(readOnly = true)
+    public BaseObjectResponse<Page<Bid>> getBidsOnItem(Long itemId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("bidAmount"));
+        Page<Bid> items = bidRepository.findItemBidHistory(pageable, itemId);
+        return new BaseObjectResponse<Page<Bid>>(true, "Succesfully get all bids", items);
+    }
 }

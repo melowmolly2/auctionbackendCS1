@@ -53,11 +53,6 @@ public class ItemService {
         return new BaseItemResponse(true, "Created new item.", item);
     }
 
-    @Transactional
-    public boolean existByItemId(Long itemId) {
-        return itemRepository.existsById(itemId);
-    }
-
     // Consider if you want to do a Cascading Deletion here
     @Transactional
     public BaseResponse deleteItem(Long itemId, String username) {
@@ -112,4 +107,8 @@ public class ItemService {
         return new BaseObjectResponse<Page<Item>>(true, "succesfully got listing", items);
     }
 
+    @Transactional
+    public boolean existByItemId(Long itemId) {
+        return itemRepository.existsById(itemId);
+    }
 }

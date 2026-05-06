@@ -20,11 +20,9 @@ import com.auction.users.dto.BalanceResponse;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final BidRepository bidRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BidRepository bidRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.bidRepository = bidRepository;
     }
 
     @Transactional
@@ -50,28 +48,6 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BaseException("Invalid username"));
         return new BalanceResponse(true, "Get balance successful", user.getBalance());
-    }
-
-    @Transactional(readOnly = true)
-    public BaseObjectResponse<Page<Bid>> getMyCurrentBids(String username, int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size);
-        User userRef = userRepository.getReferenceById(username);
-
-        Page<Bid> bids = bidRepository.findAllByUser(userRef, pageable);
-
-        return new BaseObjectResponse<Page<Bid>>(true, "succesfully got my bids", bids);
-    }
-
-    @Transactional(readOnly = true)
-    public BaseObjectResponse<List<BidAndItem>> getMyWinnings(String username) {
-
-        List<Bid> bids = bidRepository.getWinsByUser(username, Instant.now().getEpochSecond());
-        ArrayList<BidAndItem> items = new ArrayList<BidAndItem>();
-        for (Bid bid : bids) {
-            items.add(new BidAndItem(bid, bid.getItem()));
-        }
-        return new BaseObjectResponse<List<BidAndItem>>(true, "sucesfully returned winnings", items);
-
     }
 
     @Transactional(readOnly = true)
