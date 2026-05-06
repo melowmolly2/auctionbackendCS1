@@ -3,12 +3,18 @@ package com.auction.auth;
 import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.auction.auth.dto.AuthResponse;
+import com.auction.auth.dto.LoginRequest;
+import com.auction.auth.dto.RegisterRequest;
 import com.auction.auth.jwtools.JwtUtil;
 import com.auction.common.BaseException;
-import com.auction.users.dto.AuthResponse;
+import com.auction.common.BaseResponse;
+import com.auction.users.User;
+import com.auction.users.UserService;
 
 @Service
 public class AuthService {
@@ -16,10 +22,15 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     @Value("${jwt.refreshExpiration}")
     private Long refreshLifetime;
+    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    public AuthService(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil) {
+    public AuthService(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil,
+            PasswordEncoder passwordEncoder, UserService userService) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Transactional
@@ -34,6 +45,35 @@ public class AuthService {
         String accessToken = jwtUtil.generateToken(token.getUsername());
         refreshTokenRepository.save(token);
         AuthResponse response = new AuthResponse(true, "successfully refresh token", accessToken, newRefreshToken);
+        return response;
+    }
+
+    public BaseResponse userRegister(RegisterRequest request) {
+        if (userService.existsUsername(request.username())) {
+            throw new BaseException("Username has already been taken");
+        }
+        String hashedPassword = passwordEncoder.encode(request.password());
+
+        User user = new User(request.username(), request.displayName(), hashedPassword, 0.0);
+        userService.saveUser(user);
+        return new BaseResponse(true, "Succesfully registed.");
+    }
+
+    @Transactional
+    public AuthResponse loginUser(LoginRequest request) {
+
+        User user = userService.getUserByUsername(request.username());
+
+        if (!passwordEncoder.matches(request.password(), user.getHashedPassword())) {
+            throw new BaseException("Invalid username or password");
+        }
+
+        String accessToken = jwtUtil.generateToken(user.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+
+        // Save the refresh token to the database
+        refreshTokenRepository.save(new RefreshToken(user.getUsername(), refreshToken));
+        AuthResponse response = new AuthResponse(true, "Succesfully logged in.", accessToken, refreshToken);
         return response;
     }
 }

@@ -1,4 +1,4 @@
-package com.auction.users.dto;
+package com.auction.auth.dto;
 
 import com.auction.common.BaseResponse;
 

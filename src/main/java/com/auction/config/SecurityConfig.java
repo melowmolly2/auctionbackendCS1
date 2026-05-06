@@ -59,7 +59,7 @@ public class SecurityConfig {
                         // Permit access to public endpoints
                         .requestMatchers("/users/login", "/swagger-ui/**", "/swagger.json", "/swagger-ui.html",
                                 "/v3/api-docs/**",
-                                "/users/register", "/users/refresh", "/refresh")
+                                "/register", "/login", "/refresh")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/items/**", "/item/status/**").permitAll()
                         // Authenticate all other requests

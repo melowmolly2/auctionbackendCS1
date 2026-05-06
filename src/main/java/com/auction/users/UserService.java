@@ -10,77 +10,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.auction.auth.RefreshToken;
-import com.auction.auth.RefreshTokenRepository;
-import com.auction.auth.jwtools.JwtUtil;
 import com.auction.bids.Bid;
 import com.auction.bids.BidRepository;
 import com.auction.common.BaseException;
 import com.auction.common.BaseObjectResponse;
 import com.auction.common.jointdata.BidAndItem;
-import com.auction.users.dto.AuthResponse;
 import com.auction.users.dto.BalanceResponse;
-import com.auction.users.dto.LoginRequest;
-import com.auction.users.dto.RegisterRequest;
-import com.auction.users.dto.UserResponse;
 
 @Service
 public class UserService {
-    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final BidRepository bidRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,
-            RefreshTokenRepository refreshTokenRepository, BidRepository bidRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BidRepository bidRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.refreshTokenRepository = refreshTokenRepository;
         this.bidRepository = bidRepository;
-    }
-
-    public UserResponse userRegister(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.username())) {
-            throw new BaseException("Username has already been taken");
-        }
-        String hashedPassword = passwordEncoder.encode(request.password());
-
-        User user = new User(request.username(), request.displayName(), hashedPassword, 0.0);
-        user = userRepository.save(user);
-        return user.toResponse();
-    }
-
-    @Transactional
-    public AuthResponse userLogin(LoginRequest request) {
-        User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new BaseException("Invalid username or password"));
-
-        if (!passwordEncoder.matches(request.password(), user.getHashedPassword())) {
-            throw new BaseException("Invalid username or password");
-        }
-
-        String token = jwtUtil.generateToken(user.getUsername());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
-
-        // Save the refresh token to the database
-        refreshTokenRepository.save(new RefreshToken(user.getUsername(), refreshToken));
-
-        return new AuthResponse(true, "Login successful", token, refreshToken);
     }
 
     @Transactional
     public User getUserReferenceByUsername(String username) {
         User userRef = userRepository.getReferenceById(username);
         return userRef;
-    }
-
-    @Transactional(readOnly = true)
-    public User getUserByUsername(String username) {
-        User request = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BaseException("Invalid username"));
-        return request;
     }
 
     @Transactional
@@ -122,5 +72,22 @@ public class UserService {
         }
         return new BaseObjectResponse<List<BidAndItem>>(true, "sucesfully returned winnings", items);
 
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new BaseException("User not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsUsername(String username) {
+        boolean response = userRepository.existsByUsername(username);
+        return response;
+    }
+
+    @Transactional
+    public User saveUser(User user) {
+        user = userRepository.save(user);
+        return user;
     }
 }

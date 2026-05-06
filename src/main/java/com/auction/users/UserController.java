@@ -1,9 +1,5 @@
 package com.auction.users;
 
-import com.auction.users.dto.AuthResponse;
-import com.auction.users.dto.LoginRequest;
-import com.auction.users.dto.RegisterRequest;
-import com.auction.users.dto.UserResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -34,18 +30,6 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        UserResponse serviceResponse = userService.userRegister(request);
-        return ResponseEntity.ok(serviceResponse);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthResponse serviceResponse = userService.userLogin(request);
-        return ResponseEntity.ok(serviceResponse);
     }
 
     @PostMapping("/me/deposit")

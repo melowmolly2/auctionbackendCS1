@@ -10,8 +10,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.auction.security.CustomUserDetailsService;
-
 import java.io.IOException;
 
 @Component
@@ -58,10 +56,4 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getServletPath();
-
-        return path.equals("/users/login") || path.equals("/users/register") || path.equals("/refresh");
-    }
 }

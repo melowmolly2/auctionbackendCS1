@@ -1,6 +1,5 @@
-package com.auction.security;
+package com.auction.auth.jwtools;
 
-import com.auction.auth.jwtools.UserDetailsImpl;
 import com.auction.users.User;
 import com.auction.users.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
