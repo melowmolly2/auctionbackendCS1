@@ -3,12 +3,11 @@ package com.auction.itemstatus;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.auction.items.Item;
 import com.auction.items.ItemRepository;
 import com.auction.itemstatus.dto.ItemStatusGetResponse;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class ItemStatusService {
@@ -29,24 +28,24 @@ public class ItemStatusService {
 
     @Transactional
     public ItemStatus updateStatus(Item item, Double currentPrice, String username) {
-        ItemStatus itemStatus = itemStatusRepository.findByItem(item);
+        ItemStatus itemStatus = itemStatusRepository.findByItemWithLock(item);
         itemStatus.setCurrentPrice(currentPrice);
         itemStatus.setHighestBidUser(username);
         itemStatusRepository.save(itemStatus);
         return itemStatus;
     }
 
-    @Transactional
     public ItemStatusGetResponse getStatusResponse(Long itemId) {
-        ItemStatus itemStatus = itemStatusRepository.findByItem(itemRepository.getReferenceById(itemId));
+        ItemStatus itemStatus = itemStatusRepository.findByItemWithLock(itemRepository.getReferenceById(itemId));
         return new ItemStatusGetResponse(true, "Succesfully get item status", itemStatus);
     }
 
+    @Transactional
     public ItemStatus getItemStatus(Long itemId) {
-        return itemStatusRepository.findByItem(itemRepository.getReferenceById(itemId));
+        return itemStatusRepository.findByItemWithLock(itemRepository.getReferenceById(itemId));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ItemStatus> getAllItemStatus() {
         return itemStatusRepository.findAll();
     }

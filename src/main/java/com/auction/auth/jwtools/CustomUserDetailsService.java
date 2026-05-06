@@ -1,4 +1,4 @@
-package com.auction.security;
+package com.auction.auth.jwtools;
 
 import com.auction.users.User;
 import com.auction.users.UserRepository;

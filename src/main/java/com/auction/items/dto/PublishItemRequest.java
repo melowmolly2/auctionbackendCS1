@@ -10,5 +10,5 @@ public record PublishItemRequest(
         @NotNull Long endTime,
         @Positive @NotNull Double startingPrice,
         @Positive @NotNull Double buyItNowPrice,
-        @Positive @NotNull Double bitIncrement) {
+        @Positive @NotNull Double bidIncrement) {
 }
