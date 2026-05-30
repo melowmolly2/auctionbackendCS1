@@ -1,3 +1,5 @@
+[![Spring Boot CI](https://github.com/dhlw123/auctionbackendCS1/actions/workflows/ci.yml/badge.svg)](https://github.com/dhlw123/auctionbackendCS1/actions/workflows/ci.yml)
+
 # Auction Platform Backend
 
 This repository contains the backend for a real-time auction platform. It provides a comprehensive RESTful API for managing user accounts, funding balances, listing auction items, placing real-time bids, and streaming live price updates using Server-Sent Events (SSE).
