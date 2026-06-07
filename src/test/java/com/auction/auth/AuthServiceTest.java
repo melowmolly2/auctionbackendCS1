@@ -144,9 +144,7 @@ class AuthServiceTest {
     RefreshToken tokenData = new RefreshToken();
     tokenData.setUsername("testuser");
     tokenData.setRefreshToken(oldRefreshToken);
-
-    ReflectionTestUtils.setField(
-        tokenData, "createdAt", Instant.now().toEpochMilli()); // Fresh token
+    tokenData.setCreatedAt(Instant.now().toEpochMilli());
 
     when(refreshTokenRepository.findRefreshTokenData(oldRefreshToken))
         .thenReturn(Optional.of(tokenData));
