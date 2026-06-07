@@ -15,41 +15,40 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 /**
- * Thực thể Bid đại diện cho một lượt đặt giá thủ công của người dùng đối với một sản phẩm đấu giá.
+ * The Bid entity represents a manual bid placed by a user on an auction item.
  */
 @Entity
 @Table(name = "bids")
 public class Bid {
 
-  // Mã ID lượt đặt giá (Khóa chính), tự động tăng
+  // Bid ID (Primary Key), auto-incremented
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "bid_id")
   private Long bidId;
 
-  // Sản phẩm đấu giá liên kết. Một sản phẩm có thể có nhiều lượt đặt giá.
+  // The associated auction item. An item can have multiple bids.
   @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "item_id")
   private Item item;
 
-  // Người thực hiện đặt giá. Một người dùng có thể thực hiện nhiều lượt đặt giá.
+  // The user who placed the bid. A user can place multiple bids.
   @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "bidder_username")
   private User user;
 
-  // Số tiền đặt cược cho lượt đấu giá này
+  // The amount of the bid for this auction
   @Column(name = "bid_amount")
   private Double bidAmount;
 
-  // Thời gian đặt giá (Epoch Milliseconds)
+  // The time the bid was placed (Epoch Milliseconds)
   @Column(name = "bid_time")
   private Long time;
 
   /**
-   * Sự kiện Jpa Lifecycle Callback: Tự động ghi lại thời gian thực hiện đặt giá trước khi lưu vào
-   * cơ sở dữ liệu.
+   * JPA Lifecycle Callback: Automatically records the time the bid was placed before saving to the database.
    */
   @PrePersist
   void addTime() {

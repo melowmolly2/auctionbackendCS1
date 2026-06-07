@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Controller xử lý các yêu cầu lấy thông tin trạng thái và tiến trình đấu giá của các mặt hàng. */
+/**
+ * Controller xử lý các yêu cầu lấy thông tin trạng thái và tiến trình đấu giá của các mặt hàng.
+ */
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/item")

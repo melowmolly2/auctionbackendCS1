@@ -120,6 +120,10 @@ public class AdminService {
     return new BaseResponse(true, "Succesfully unbanned user.");
   }
 
+  /**
+   * Hoàn tất các phiên đấu giá đã hết hạn.
+   * @return Phản hồi thông báo các phiên đấu giá đã hết hạn đã được hoàn tất
+   */
   public BaseResponse finalizeExpiredAuctions() {
     auctionFinalizer.finalizeExpiredAuctions();
     return new BaseResponse(true, "Finalized expired auctions");

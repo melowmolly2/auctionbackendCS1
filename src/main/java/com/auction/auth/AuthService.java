@@ -17,7 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Service xử lý các nghiệp vụ đăng ký, đăng nhập, đăng xuất và gia hạn token của người dùng. */
+/**
+ * Service for handling user registration, login, logout, and token renewal operations.
+ */
 @Service
 public class AuthService {
   private static final Logger log = LoggerFactory.getLogger(AuthService.class);
@@ -25,14 +27,14 @@ public class AuthService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final JwtUtil jwtUtil;
 
-  // Thời gian sống của Refresh Token (được cấu hình trong file application.properties)
+  // Lifetime of the Refresh Token (configured in application.properties)
   @Value("${jwt.refreshExpiration}")
   private Long refreshLifetime;
 
   private final PasswordEncoder passwordEncoder;
   private final UserService userService;
 
-  // Chuỗi băm nhận diện người dùng bị cấm (banned)
+  // Hash string to identify banned users
   @Value("${ban_hash}")
   private String banHash;
 
@@ -48,26 +50,26 @@ public class AuthService {
   }
 
   /**
-   * Thực hiện nghiệp vụ làm mới (refresh) token khi Access Token hết hạn.
+   * Refreshes the access token when it expires.
    *
-   * @param refreshToken Chuỗi Refresh Token hiện tại của người dùng
-   * @return AuthResponse chứa Access Token mới và Refresh Token mới
+   * @param refreshToken The user's current refresh token
+   * @return AuthResponse containing a new access token and a new refresh token
    */
   @Transactional
   public AuthResponse refreshingToken(String refreshToken) {
-    // Tìm thông tin Refresh Token trong DB
+    // Find refresh token information in the DB
     RefreshToken token =
         refreshTokenRepository
             .findRefreshTokenData(refreshToken)
             .orElseThrow(() -> new BaseException("invalid refresh token"));
 
-    // Kiểm tra xem Refresh Token đã hết hạn chưa
+    // Check if the refresh token has expired
     boolean isTokenExpired = token.getCreatedAt() + refreshLifetime < Instant.now().toEpochMilli();
     if (isTokenExpired) {
       throw new BaseException("Refresh token has expired, please login again");
     }
 
-    // Tạo token mới và cập nhật lại vào DB
+    // Create a new token and update it in the DB
     String newRefreshTokenKey = jwtUtil.generateRefreshToken(token.getUsername());
     Long currentTime = Instant.now().toEpochMilli();
     RefreshToken newRefreshToken =
@@ -79,22 +81,22 @@ public class AuthService {
   }
 
   /**
-   * Đăng ký tài khoản người dùng mới.
+   * Registers a new user account.
    *
-   * @param request Yêu cầu đăng ký chứa username, displayName, password
-   * @return BaseResponse phản hồi trạng thái
+   * @param request Registration request containing username, displayName, and password
+   * @return BaseResponse indicating the status
    */
   @Transactional
   public BaseResponse userRegister(RegisterRequest request) {
-    // Kiểm tra tên tài khoản đã được đăng ký trước đó chưa
+    // Check if the username has already been registered
     if (userService.existsUsername(request.username())) {
       throw new BaseException("Username has already been taken");
     }
 
-    // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+    // Encrypt the password before saving it to the database
     String hashedPassword = passwordEncoder.encode(request.password());
 
-    // Tạo người dùng mới với số dư ví mặc định là 0.0
+    // Create a new user with a default wallet balance of 0.0
     User user = new User(request.username(), request.displayName(), hashedPassword, 0.0);
     userService.saveUser(user);
     log.info("User registered: {}", request.username());
@@ -102,16 +104,16 @@ public class AuthService {
   }
 
   /**
-   * Xác thực thông tin và đăng nhập tài khoản người dùng.
+   * Authenticates and logs in a user account.
    *
-   * @param request Yêu cầu đăng nhập chứa username và password
-   * @return AuthResponse chứa thông tin đăng nhập thành công kèm Access Token và Refresh Token
+   * @param request Login request containing username and password
+   * @return AuthResponse containing successful login information with an access token and a refresh token
    */
   @Transactional
   public AuthResponse loginUser(LoginRequest request) {
     User user = userService.getUserByUsername(request.username());
 
-    // Kiểm tra xem người dùng có bị cấm (banned) hay không
+    // Check if the user is banned
     if (user.getHashedPassword().equals(banHash)) {
       log.warn("Banned user attempted login: {}", request.username());
       throw new BaseException("User was banned");
@@ -132,10 +134,9 @@ public class AuthService {
   }
 
   /**
-   * Thu hồi/xóa bỏ Refresh Token của người dùng khỏi DB khi đăng xuất hoặc tài khoản bị vô hiệu
-   * hóa.
+   * Revokes/deletes a user's refresh token from the DB upon logout or account deactivation.
    *
-   * @param username Tên đăng nhập người dùng cần thu hồi
+   * @param username The username of the user whose token is to be revoked
    */
   @Transactional
   public void revokeToken(String username) {
@@ -143,10 +144,10 @@ public class AuthService {
   }
 
   /**
-   * Thực hiện đăng xuất tài khoản và thu hồi token hiện tại.
+   * Logs out the account and revokes the current token.
    *
-   * @param userDetailsImpl Thông tin người dùng hiện tại đang đăng nhập
-   * @return BaseResponse phản hồi trạng thái đăng xuất
+   * @param userDetailsImpl Information of the currently logged-in user
+   * @return BaseResponse indicating the logout status
    */
   @Transactional
   public BaseResponse logoutUser(UserDetailsImpl userDetailsImpl) {

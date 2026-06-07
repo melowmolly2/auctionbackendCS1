@@ -9,7 +9,9 @@ import jakarta.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Thực thể User đại diện cho thông tin tài khoản người dùng trong cơ sở dữ liệu. */
+/**
+ * Thực thể User đại diện cho thông tin tài khoản người dùng trong cơ sở dữ liệu.
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -43,7 +45,9 @@ public class User {
     this.balance = balance;
   }
 
-  /** Chuyển đổi thông tin thực thể User sang UserResponse DTO để gửi lại cho Client. */
+  /**
+   * Chuyển đổi thông tin thực thể User sang UserResponse DTO để gửi lại cho Client.
+   */
   public UserResponse toResponse() {
     return new UserResponse(getUsername(), getDisplayName(), getBalance());
   }

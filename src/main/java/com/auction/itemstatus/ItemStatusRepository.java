@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-/** Repository cung cấp các phương thức truy vấn và khóa bản ghi cho bảng "item_statuses". */
+/**
+ * Repository cung cấp các phương thức truy vấn và khóa bản ghi cho bảng "item_statuses".
+ */
 public interface ItemStatusRepository extends JpaRepository<ItemStatus, Long> {
 
   /**
@@ -33,5 +35,11 @@ public interface ItemStatusRepository extends JpaRepository<ItemStatus, Long> {
   @Query(value = "SELECT s FROM ItemStatus s WHERE s.item.itemId = :itemId")
   ItemStatus findByItemWithLockByItemId(@Param("itemId") Long itemId);
 
+  /**
+   * Tìm danh sách các trạng thái sản phẩm theo trạng thái và thời gian kết thúc.
+   * @param itemStatus Trạng thái sản phẩm
+   * @param endTime Thời gian kết thúc
+   * @return Danh sách các trạng thái sản phẩm
+   */
   List<ItemStatus> findByItemStatusAndEndTimeBefore(String itemStatus, Long endTime);
 }

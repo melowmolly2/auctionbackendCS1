@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller chịu trách nhiệm cung cấp các API liên quan đến Xác thực (Authentication) và Phân
- * quyền như Đăng ký, Đăng nhập, Đăng xuất và Làm mới Token.
+ * Controller responsible for providing APIs related to Authentication and Authorization
+ * such as Register, Login, Logout, and Refresh Token.
  */
 @RestController
 @RequestMapping("")
@@ -28,10 +28,11 @@ public class AuthController {
   }
 
   /**
-   * API làm mới Access Token bằng Refresh Token. POST /refresh
+   * API to refresh the Access Token using a Refresh Token.
+   * POST /refresh
    *
-   * @param request Yêu cầu chứa mã Refresh Token
-   * @return ResponseEntity chứa cặp token mới (Access Token và Refresh Token)
+   * @param request Request containing the Refresh Token
+   * @return ResponseEntity containing a new token pair (Access Token and Refresh Token)
    */
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
@@ -40,10 +41,11 @@ public class AuthController {
   }
 
   /**
-   * API đăng nhập người dùng vào hệ thống. POST /login
+   * API for user login to the system.
+   * POST /login
    *
-   * @param request Yêu cầu đăng nhập chứa username và password
-   * @return ResponseEntity chứa token xác thực nếu thông tin đăng nhập chính xác
+   * @param request Login request containing username and password
+   * @return ResponseEntity containing an authentication token if the login information is correct
    */
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -52,10 +54,11 @@ public class AuthController {
   }
 
   /**
-   * API đăng ký tài khoản người dùng mới. POST /register
+   * API for registering a new user account.
+   * POST /register
    *
-   * @param request Yêu cầu đăng ký chứa username, displayName và password
-   * @return ResponseEntity phản hồi trạng thái đăng ký thành công
+   * @param request Registration request containing username, displayName, and password
+   * @return ResponseEntity responding with the successful registration status
    */
   @PostMapping("/register")
   public ResponseEntity<BaseResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -64,10 +67,11 @@ public class AuthController {
   }
 
   /**
-   * API đăng xuất tài khoản khỏi hệ thống, thu hồi Refresh Token hiện tại. POST /logout
+   * API for logging out of the system, revoking the current Refresh Token.
+   * POST /logout
    *
-   * @param userDetailsImpl Thông tin người dùng hiện tại lấy từ Security Context
-   * @return ResponseEntity phản hồi trạng thái đăng xuất thành công
+   * @param userDetailsImpl Current user information obtained from the Security Context
+   * @return ResponseEntity responding with the successful logout status
    */
   @PostMapping("/logout")
   public ResponseEntity<BaseResponse> logout(

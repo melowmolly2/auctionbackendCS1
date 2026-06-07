@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-/** Record đại diện cho dữ liệu yêu cầu đăng bán đấu giá sản phẩm mới. */
+/**
+ * Record đại diện cho dữ liệu yêu cầu đăng bán đấu giá sản phẩm mới.
+ */
 public record PublishItemRequest(
     // Tiêu đề của sản phẩm, không được trống
     @NotBlank String title,

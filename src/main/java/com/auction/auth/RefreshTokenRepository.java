@@ -6,15 +6,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** Repository cung cấp các phương thức thao tác cơ sở dữ liệu với thực thể RefreshToken. */
+/**
+ * Repository providing database manipulation methods for the RefreshToken entity.
+ */
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
 
   /**
-   * Tìm kiếm thông tin Refresh Token dựa trên chuỗi giá trị token.
+   * Searches for Refresh Token information based on the token string value.
    *
-   * @param token Chuỗi Refresh Token cần tìm
-   * @return Một Optional chứa thông tin RefreshToken nếu tìm thấy
+   * @param token The Refresh Token string to find
+   * @return An Optional containing the RefreshToken information if found
    */
   @Query(value = "SELECT t FROM RefreshToken t WHERE t.refreshToken = :token")
   Optional<RefreshToken> findRefreshTokenData(@Param("token") String token);

@@ -6,28 +6,29 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * Thực thể RefreshToken đại diện cho mã làm mới (Refresh Token) được sử dụng để gia hạn Access
- * Token. Được lưu vào cơ sở dữ liệu để kiểm soát phiên làm việc của người dùng.
+ * The RefreshToken entity represents a refresh token used to renew an access token.
+ * It is stored in the database to manage user sessions.
  */
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {
 
-  // Tên đăng nhập của người dùng (Khóa chính), mỗi tài khoản chỉ có tối đa một Refresh Token tại
-  // một thời điểm
+  // The username of the user (Primary Key), each account can have at most one refresh token at a time
   @Id
   @Column(name = "username")
   private String username;
 
-  // Giá trị của mã Refresh Token mã hóa dạng JWT
+  // The value of the JWT-encoded refresh token
   @Column(name = "token")
   private String refreshToken;
 
-  // Thời gian tạo Refresh Token (Epoch Milliseconds)
+  // The creation time of the refresh token (Epoch Milliseconds)
   @Column(name = "created_at")
   private Long createdAt;
 
-  /** Sự kiện Jpa Lifecycle Callback: Tự động ghi nhận thời điểm tạo Token trước khi lưu vào DB. */
+  /**
+   * JPA Lifecycle Callback: Automatically records the token creation time before saving to the DB.
+   */
   protected RefreshToken() {}
 
   public RefreshToken(String username, String refreshToken, Long createdAt) {

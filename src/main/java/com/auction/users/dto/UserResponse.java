@@ -1,6 +1,8 @@
 package com.auction.users.dto;
 
-/** DTO representing a user's public profile information. */
+/**
+ * DTO đại diện cho thông tin hồ sơ công khai của người dùng.
+ */
 public class UserResponse {
 
   private final String username;

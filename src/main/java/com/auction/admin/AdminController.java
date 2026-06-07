@@ -67,6 +67,10 @@ public class AdminController {
     return ResponseEntity.ok().body(response);
   }
 
+  /**
+   * API hoàn tất các phiên đấu giá đã hết hạn.
+   * @return ResponseEntity phản hồi trạng thái hoàn tất thành công
+   */
   @PostMapping("/finalize")
   public ResponseEntity<BaseResponse> finalizeExpired() {
     BaseResponse response = adminService.finalizeExpiredAuctions();

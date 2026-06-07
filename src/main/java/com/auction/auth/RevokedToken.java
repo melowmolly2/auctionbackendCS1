@@ -6,19 +6,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * Thực thể RevokedToken lưu trữ thông tin các token đã bị thu hồi hoặc danh sách người dùng bị cấm
- * (banned). Dùng để kiểm tra tính hợp lệ của token JWT đã phát hành trước đó.
+ * The RevokedToken entity stores information about revoked tokens or banned users.
+ * It is used to check the validity of previously issued JWTs.
  */
 @Entity
 @Table(name = "revoked_tokens")
 public class RevokedToken {
 
-  // Tên đăng nhập của người dùng bị thu hồi quyền hoặc bị cấm (Khóa chính)
+  // The username of the user whose privileges have been revoked or who has been banned (Primary Key)
   @Id
   @Column(name = "username")
   private String username;
 
-  // Thời điểm người dùng bị cấm hoặc thu hồi token (Epoch Milliseconds)
+  // The time the user was banned or the token was revoked (Epoch Milliseconds)
   @Column(name = "banned_at", nullable = false)
   private Long bannedAt;
 

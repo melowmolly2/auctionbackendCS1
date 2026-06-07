@@ -25,9 +25,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**
- * Bộ lọc bảo mật JWT (JwtSecurityFilter) kế thừa OncePerRequestFilter. Đảm bảo chỉ được kích hoạt
- * một lần duy nhất cho mỗi yêu cầu HTTP gửi đến. Xác thực token JWT, kiểm tra thu hồi/cấm người
- * dùng, và thiết lập Security Context.
+ * JWT Security Filter (JwtSecurityFilter) that extends OncePerRequestFilter.
+ * Ensures it is activated only once for each incoming HTTP request.
+ * Validates the JWT, checks for user revocation/ban, and sets up the Security Context.
  */
 @Component
 public class JwtSecurityFilter extends OncePerRequestFilter {
@@ -48,7 +48,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     this.revokedTokenRepository = revokedTokenRepository;
     this.resolver = resolver;
 
-    // Danh sách các mẫu đường dẫn công khai được phép truy cập tự do mà không cần kiểm tra JWT
+    // List of public path patterns that are allowed free access without JWT checking
     this.publicMatchers =
         List.of(
             PathPatternRequestMatcher.pathPattern("/users/login"),
@@ -64,8 +64,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   }
 
   /**
-   * Logic lọc chính, trích xuất và xác thực token JWT, nạp thông tin người dùng vào Security
-   * Context.
+   * Main filtering logic, extracts and validates the JWT, loads user information into the Security Context.
    */
   @Override
   public void doFilterInternal(
@@ -92,41 +91,40 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
       String username = jwtUtil.getUserFromToken(encodedToken);
       Date issuedAt = jwtUtil.getIssuedAtFromToken(encodedToken);
 
-      // Kiểm tra xem tài khoản này có nằm trong danh sách bị thu hồi token / bị cấm hay không
+      // Check if this account is on the list of revoked tokens / banned users
       Optional<RevokedToken> revoked = revokedTokenRepository.findById(username);
 
       if (revoked.isPresent()) {
-        // Nếu thời gian phát hành token (issuedAt) xảy ra trước thời điểm bị cấm (bannedAt) ->
-        // Không xác thực
+        // If the token's issuance time (issuedAt) occurred before the ban time (bannedAt) -> Do not authenticate
         if (!issuedAt.toInstant().isAfter(Instant.ofEpochMilli(revoked.get().getBannedAt()))) {
           filterChain.doFilter(request, response);
           return;
         }
-        // Nếu thời gian phát hành sau thời điểm cấm (người dùng đã được unbanned và đăng nhập lại),
-        // xóa bản ghi cấm khỏi DB
+        // If the issuance time is after the ban time (user has been unbanned and logged in again),
+        // delete the ban record from the DB
         revokedTokenRepository.delete(revoked.get());
       }
 
-      // Nạp thông tin tài khoản người dùng từ DB
+      // Load user account information from the DB
       UserDetailsImpl userDetails =
           UserDetailsImpl.JPAtoUserDetails(userService.getUserByUsername(username));
 
-      // Tạo đối tượng xác thực đại diện cho người dùng
+      // Create an authentication object representing the user
       UsernamePasswordAuthenticationToken authenticationToken =
           new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
       authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-      // Lưu đối tượng xác thực vào Security Context của thread hiện tại
+      // Save the authentication object to the Security Context of the current thread
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
-    // Tiếp tục chuỗi lọc (filter chain)
+    // Continue the filter chain
     filterChain.doFilter(request, response);
   }
 
   /**
-   * Xác định xem request hiện tại có cần chạy qua bộ lọc JWT hay không. Bỏ qua bộ lọc nếu đường dẫn
-   * thuộc danh sách publicMatchers.
+   * Determines whether the current request needs to go through the JWT filter.
+   * Skips the filter if the path belongs to the publicMatchers list.
    */
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -134,10 +132,10 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   }
 
   /**
-   * Trích xuất mã token JWT từ Header "Authorization" trong request gửi tới.
+   * Extracts the JWT token from the "Authorization" header in the incoming request.
    *
-   * @param request HTTP request nhận được
-   * @return Chuỗi mã JWT sau khi loại bỏ tiền tố "Bearer ", hoặc null nếu không hợp lệ
+   * @param request The received HTTP request
+   * @return The JWT string after removing the "Bearer " prefix, or null if invalid
    */
   public String parseJwt(HttpServletRequest request) {
     String authenticationHeader = request.getHeader("Authorization");

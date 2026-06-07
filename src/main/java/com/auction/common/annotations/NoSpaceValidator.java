@@ -3,7 +3,9 @@ package com.auction.common.annotations;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-/** Trình xác thực (Validator) thực thi logic kiểm tra cho annotation @NoSpace. */
+/**
+ * Trình xác thực (Validator) thực thi logic kiểm tra cho annotation @NoSpace.
+ */
 public class NoSpaceValidator implements ConstraintValidator<NoSpace, String> {
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {

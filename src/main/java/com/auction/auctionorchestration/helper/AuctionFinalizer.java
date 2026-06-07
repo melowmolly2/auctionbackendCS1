@@ -14,6 +14,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Lớp trợ giúp để hoàn tất các phiên đấu giá đã hết hạn.
+ */
 @Component
 public class AuctionFinalizer {
 
@@ -35,6 +38,9 @@ public class AuctionFinalizer {
     this.userService = userService;
   }
 
+  /**
+   * Hoàn tất các phiên đấu giá đã hết hạn.
+   */
   @Scheduled(fixedDelayString = "${auction.finalizer.delay:30000}")
   @Transactional
   public void finalizeExpiredAuctions() {

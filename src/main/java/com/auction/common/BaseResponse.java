@@ -1,6 +1,8 @@
 package com.auction.common;
 
-/** Lớp phản hồi API cơ sở, định nghĩa cấu trúc dữ liệu chuẩn trả về cho mọi yêu cầu API. */
+/**
+ * Lớp phản hồi API cơ sở, định nghĩa cấu trúc dữ liệu chuẩn trả về cho mọi yêu cầu API.
+ */
 public class BaseResponse {
   // Trạng thái của yêu cầu (true nếu thành công, false nếu thất bại)
   private boolean status;

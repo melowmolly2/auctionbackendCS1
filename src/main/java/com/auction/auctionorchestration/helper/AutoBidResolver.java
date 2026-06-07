@@ -10,6 +10,9 @@ import com.auction.users.UserService;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
+/**
+ * Lớp trợ giúp để giải quyết các logic liên quan đến đặt giá tự động.
+ */
 @Component
 public class AutoBidResolver {
 
@@ -21,6 +24,14 @@ public class AutoBidResolver {
     this.userService = userService;
   }
 
+  /**
+   * Giải quyết logic khi có một lượt đặt giá thủ công đối với một sản phẩm có đặt giá tự động.
+   * @param itemStatus Trạng thái sản phẩm
+   * @param username Tên người dùng
+   * @param item Sản phẩm
+   * @param bidAmount Số tiền đặt
+   * @param itemId ID sản phẩm
+   */
   public void resolveAgainstManualBid(
       ItemStatus itemStatus, String username, Item item, Double bidAmount, Long itemId) {
     Optional<AutoBid> autoBidOP = bidService.getAutoBidByItemId(itemId);
@@ -54,6 +65,12 @@ public class AutoBidResolver {
     }
   }
 
+  /**
+   * Giải quyết logic hoàn tiền khi một sản phẩm được mua ngay.
+   * @param itemStatus Trạng thái sản phẩm
+   * @param item Sản phẩm
+   * @param itemId ID sản phẩm
+   */
   public void resolveBuyNowRefund(ItemStatus itemStatus, Item item, Long itemId) {
     if (!itemStatus.getHighestBidUser().equals(item.getUser().getUsername())) {
       Optional<AutoBid> autoBidOP = bidService.getAutoBidByItemId(itemId);
@@ -74,6 +91,12 @@ public class AutoBidResolver {
     }
   }
 
+  /**
+   * Giải quyết logic khi tạo một lượt đặt giá tự động.
+   * @param itemStatus Trạng thái sản phẩm
+   * @param bidder Người đặt giá
+   * @param request Yêu cầu đặt giá tự động
+   */
   public void resolveAutoBidCreation(ItemStatus itemStatus, User bidder, AutoBidRequest request) {
     Optional<AutoBid> autoBidOP = bidService.getAutoBidByItemId(request.itemId());
     boolean isSameAutoBidder =

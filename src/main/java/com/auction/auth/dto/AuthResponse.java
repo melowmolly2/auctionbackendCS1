@@ -2,12 +2,14 @@ package com.auction.auth.dto;
 
 import com.auction.common.BaseResponse;
 
-/** Lớp phản hồi thông tin xác thực sau khi đăng nhập hoặc làm mới token thành công. */
+/**
+ * Response class for authentication information after successful login or token refresh.
+ */
 public class AuthResponse extends BaseResponse {
-  // Mã Access Token dùng để truy cập các tài nguyên bảo mật (thường có thời gian sống ngắn)
+  // Access Token used to access secure resources (usually has a short lifespan)
   private String accessToken;
 
-  // Mã Refresh Token dùng để gia hạn Access Token mới (thường có thời gian sống dài hơn)
+  // Refresh Token used to renew the Access Token (usually has a longer lifespan)
   private String refreshToken;
 
   public AuthResponse(boolean status, String message, String accessToken, String refreshToken) {

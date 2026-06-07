@@ -8,8 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Lớp triển khai UserDetails của Spring Security. Dùng để lưu trữ thông tin tài khoản người dùng đã
- * được xác thực trong Spring Security Context.
+ * Implementation of Spring Security's UserDetails. Used to store authenticated user account information
+ * in the Spring Security Context.
  */
 public class UserDetailsImpl implements UserDetails {
   private String username;
@@ -29,11 +29,11 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   /**
-   * Phương thức tĩnh hỗ trợ chuyển đổi từ đối tượng thực thể User (JPA) sang đối tượng
-   * UserDetailsImpl. Cấp vai trò ROLE_ADMIN nếu tên đăng nhập là "admin".
+   * Static helper method to convert from a User entity object (JPA) to a UserDetailsImpl object.
+   * Assigns the ROLE_ADMIN role if the username is "admin".
    *
-   * @param user Thực thể User cần chuyển đổi
-   * @return Đối tượng UserDetailsImpl tương ứng
+   * @param user The User entity to convert
+   * @return The corresponding UserDetailsImpl object
    */
   public static UserDetailsImpl JPAtoUserDetails(User user) {
     List<GrantedAuthority> authorities;
@@ -51,8 +51,7 @@ public class UserDetailsImpl implements UserDetails {
     return username;
   }
 
-  // Trả về mật khẩu rỗng vì cơ chế JWT không cần lưu trữ mật khẩu trong UserDetails sau khi đã xác
-  // thực
+  // Returns an empty password because the JWT mechanism does not need to store the password in UserDetails after authentication
   @Override
   public String getPassword() {
     return "";

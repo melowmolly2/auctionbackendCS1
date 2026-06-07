@@ -2,7 +2,9 @@ package com.auction.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-/** Record đại diện cho dữ liệu yêu cầu gia hạn Access Token bằng Refresh Token. */
+/**
+ * Record representing the request data for renewing an Access Token using a Refresh Token.
+ */
 public record RefreshTokenRequest(
-    // Chuỗi Refresh Token hiện có của người dùng, không được để trống
+    // The user's existing Refresh Token string, cannot be blank
     @NotBlank String refreshToken) {}

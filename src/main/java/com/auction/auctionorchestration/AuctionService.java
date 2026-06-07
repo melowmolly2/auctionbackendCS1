@@ -28,6 +28,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service điều phối các hoạt động đấu giá, kết hợp các service khác để thực hiện các nghiệp vụ phức tạp.
+ */
 @Service
 public class AuctionService {
 
@@ -59,6 +62,12 @@ public class AuctionService {
     this.itemPricesSink = itemPricesSink;
   }
 
+  /**
+   * Tạo một lượt đặt giá mới.
+   * @param request Yêu cầu đặt giá
+   * @param username Tên người dùng
+   * @return Phản hồi chứa thông tin lượt đặt giá
+   */
   @Transactional
   public BaseObjectResponse<Bid> createBid(BidPostRequest request, String username) {
     Item item = itemService.getItemRef(request.itemId());
@@ -75,6 +84,13 @@ public class AuctionService {
     return new BaseObjectResponse<>(true, "Successfully created bid for an item", bid);
   }
 
+  /**
+   * Lấy danh sách các lượt đặt giá hiện tại của người dùng.
+   * @param username Tên người dùng
+   * @param page Số trang
+   * @param size Kích thước trang
+   * @return Phản hồi chứa danh sách các lượt đặt giá
+   */
   @Transactional(readOnly = true)
   public BaseObjectResponse<Page<Bid>> getMyCurrentBids(String username, int page, int size) {
     PageRequest pageable = PageRequest.of(page, size);
@@ -83,6 +99,11 @@ public class AuctionService {
     return new BaseObjectResponse<>(true, "succesfully got my bids", bids);
   }
 
+  /**
+   * Lấy danh sách các sản phẩm mà người dùng đã thắng.
+   * @param username Tên người dùng
+   * @return Phản hồi chứa danh sách các sản phẩm đã thắng
+   */
   @Transactional(readOnly = true)
   public BaseObjectResponse<List<BidAndItem>> getMyWinnings(String username) {
     List<Bid> bids = bidService.getUserWins(username);
@@ -93,6 +114,12 @@ public class AuctionService {
     return new BaseObjectResponse<>(true, "successfully returned winnings", items);
   }
 
+  /**
+   * Mua ngay một sản phẩm.
+   * @param itemId ID sản phẩm
+   * @param username Tên người dùng
+   * @return Phản hồi cho biết đã mua thành công hay chưa
+   */
   @Transactional
   public BaseResponse buyItemNow(Long itemId, String username) {
     ItemStatus itemStatus = itemStatusService.getItemStatus(itemId);
@@ -115,6 +142,12 @@ public class AuctionService {
     return new BaseResponse(true, "Successfully bought item");
   }
 
+  /**
+   * Tạo một lượt đặt giá tự động.
+   * @param request Yêu cầu đặt giá tự động
+   * @param bidderName Tên người đặt giá
+   * @return Phản hồi cho biết đã tạo thành công hay chưa
+   */
   @Transactional
   public BaseResponse createAutoBid(AutoBidRequest request, String bidderName) {
     User bidder = userService.getUserByUsername(bidderName);

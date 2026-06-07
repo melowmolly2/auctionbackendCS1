@@ -4,7 +4,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/** Repository cung cấp các phương thức truy vấn dữ liệu từ bảng "users" trong cơ sở dữ liệu. */
+/**
+ * Repository cung cấp các phương thức truy vấn dữ liệu từ bảng "users" trong cơ sở dữ liệu.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 

@@ -12,40 +12,40 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 /**
- * Thực thể AutoBid đại diện cho cấu hình tự động đặt giá (Auto-Bid) của một người dùng đối với một
- * sản phẩm đấu giá. Hệ thống sẽ tự động nâng giá cược khi có người cược cao hơn, cho tới khi chạm
- * giới hạn maxBidLimit.
+ * The AutoBid entity represents a user's automatic bidding configuration for an auction item.
+ * The system will automatically increase the bid when someone else bids higher, up to the maxBidLimit.
  */
 @Entity
 @Table(name = "autobids")
 public class AutoBid {
 
-  // Mã ID sản phẩm đấu giá (Khóa chính), mỗi sản phẩm tại một thời điểm chỉ có tối đa một cấu hình
-  // AutoBid hoạt động
+  // Auction item ID (Primary Key), each item can have at most one active AutoBid configuration at a time
   @Id
   @JsonIgnore
   @Column(name = "item_id")
   private Long itemId;
 
-  // Giới hạn giá cược tối đa mà người dùng sẵn sàng chi trả cho sản phẩm này
+  // The maximum bid limit the user is willing to pay for this item
   @Column(name = "max_bid_limit")
   private Double maxBidLimit;
 
-  // Giá trị cược hiện tại mà hệ thống tự động đã đặt thay cho người dùng
+  // The current bid value that the system has automatically placed on behalf of the user
   @Column(name = "current_bid_value")
   private Double currentBidValue;
 
-  // Người dùng thiết lập cấu hình tự động đặt giá này
+  // The user who set up this automatic bidding configuration
   @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "bidder_username")
   private User bidder;
 
-  // Thời gian cấu hình hoặc cập nhật tự động đặt giá
+  // The time the automatic bidding was configured or updated
   @Column(name = "bid_time")
   private Long time;
 
-  /** Sự kiện Jpa Lifecycle Callback: Tự động ghi lại thời gian tạo cấu hình AutoBid. */
+  /**
+   * JPA Lifecycle Callback: Automatically records the creation time of the AutoBid configuration.
+   */
   @PrePersist
   void addTime() {
     time = Instant.now().toEpochMilli();

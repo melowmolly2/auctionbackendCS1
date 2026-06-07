@@ -4,7 +4,9 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
-/** Annotation xác thực tùy chỉnh: Ràng buộc giá trị chuỗi không được chứa khoảng trắng. */
+/**
+ * Annotation xác thực tùy chỉnh: Ràng buộc giá trị chuỗi không được chứa khoảng trắng.
+ */
 @Documented
 @Constraint(validatedBy = NoSpaceValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD})

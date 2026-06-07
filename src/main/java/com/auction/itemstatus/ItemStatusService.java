@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Service quản lý các nghiệp vụ cập nhật và kiểm tra trạng thái đấu giá của sản phẩm. */
+/**
+ * Service quản lý các nghiệp vụ cập nhật và kiểm tra trạng thái đấu giá của sản phẩm.
+ */
 @Service
 public class ItemStatusService {
   private final ItemStatusRepository itemStatusRepository;

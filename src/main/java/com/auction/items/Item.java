@@ -12,7 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-/** Thực thể Item đại diện cho một mặt hàng được đăng bán đấu giá trong hệ thống. */
+/**
+ * Thực thể Item đại diện cho một mặt hàng được đăng bán đấu giá trong hệ thống.
+ */
 @Entity
 @Table(name = "items")
 public class Item {

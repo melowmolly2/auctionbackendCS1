@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** Repository quản lý việc truy vấn dữ liệu từ bảng "items". */
+/**
+ * Repository quản lý việc truy vấn dữ liệu từ bảng "items".
+ */
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 

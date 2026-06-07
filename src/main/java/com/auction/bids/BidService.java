@@ -14,7 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Service quản lý các nghiệp vụ liên quan đến lượt đặt giá (Bid) và tự động đặt giá (Auto-Bid). */
+/**
+ * Service that manages business logic related to bids and auto-bids.
+ */
 @Service
 public class BidService {
 
@@ -27,8 +29,7 @@ public class BidService {
   }
 
   /**
-   * Lấy phân trang toàn bộ danh sách đặt giá của một mặt hàng cụ thể, sắp xếp theo số tiền cược
-   * tăng dần.
+   * Retrieves a paginated list of all bids for a specific item, sorted by bid amount in ascending order.
    */
   @Transactional(readOnly = true)
   public BaseObjectResponse<Page<Bid>> getBidsOnItem(Long itemId, int page, int size) {
@@ -37,13 +38,17 @@ public class BidService {
     return new BaseObjectResponse<Page<Bid>>(true, "Succesfully get all bids", items);
   }
 
-  /** Kiểm tra xem người dùng đã thực hiện đặt giá trên mặt hàng cụ thể này hay chưa. */
+  /**
+   * Checks if a user has already placed a bid on a specific item.
+   */
   @Transactional(readOnly = true)
   public boolean existUserAndItem(User user, Item item) {
     return bidRepository.existsByUserAndItem(user, item);
   }
 
-  /** Lưu thông tin lượt đặt giá mới vào cơ sở dữ liệu. */
+  /**
+   * Saves a new bid to the database.
+   */
   @Transactional
   public Bid saveBid(Bid bid) {
     bid = bidRepository.save(bid);
@@ -51,8 +56,7 @@ public class BidService {
   }
 
   /**
-   * Lấy chi tiết thông tin lượt đặt giá của một người dùng trên một mặt hàng cụ thể. Ném ngoại lệ
-   * nếu không tìm thấy.
+   * Retrieves the details of a user's bid on a specific item. Throws an exception if not found.
    */
   @Transactional
   public Bid getBidByUserAndItem(User user, Item item) {
@@ -63,7 +67,9 @@ public class BidService {
     return bid;
   }
 
-  /** Lấy toàn bộ danh sách các lượt đặt giá mà người dùng đã thực hiện. */
+  /**
+   * Retrieves a complete list of all bids placed by a user.
+   */
   @Transactional(readOnly = true)
   public Page<Bid> getAllUserBid(User userRef, Pageable pageable) {
     Page<Bid> bids = bidRepository.findAllByUser(userRef, pageable);
@@ -71,10 +77,10 @@ public class BidService {
   }
 
   /**
-   * Lấy danh sách các phiên đấu giá mà người dùng đã thắng cuộc ở thời điểm hiện tại.
+   * Retrieves a list of auctions that the user has currently won.
    *
-   * @param username Tên đăng nhập người dùng
-   * @return Danh sách các lượt đặt giá đem lại thắng cuộc
+   * @param username The username of the user
+   * @return A list of winning bids
    */
   @Transactional
   public List<Bid> getUserWins(String username) {
@@ -82,19 +88,25 @@ public class BidService {
     return bids;
   }
 
-  /** Tìm kiếm cấu hình tự động đặt giá (Auto-Bid) của một mặt hàng cụ thể. */
+  /**
+   * Searches for the auto-bid configuration of a specific item.
+   */
   @Transactional(readOnly = true)
   public Optional<AutoBid> getAutoBidByItemId(Long itemId) {
     return autoBidRepository.findByItemId(itemId);
   }
 
-  /** Tạo mới hoặc cập nhật cấu hình tự động đặt giá (Auto-Bid). */
+  /**
+   * Creates or updates an auto-bid configuration.
+   */
   @Transactional
   public void saveAutoBid(AutoBid autoBid) {
     autoBidRepository.save(autoBid);
   }
 
-  /** Xóa bỏ cấu hình tự động đặt giá (Auto-Bid). */
+  /**
+   * Deletes an auto-bid configuration.
+   */
   @Transactional
   public void deleteAutoBid(AutoBid autoBid) {
     autoBidRepository.delete(autoBid);
